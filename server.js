@@ -1,19 +1,23 @@
 require('dotenv').config();
 const express = require('express'),
-    mongoose = require('mongoose')
+    mongoose = require('mongoose'),
     socketio = require('socket.io'),
     session = require('cookie-session'),
     helmet = require('helmet'),
     hpp = require('hpp'),
-    csurf = require('csurf'),
+    // csurf = require('csurf'),
     http = require('http'),
     net = require('net'),
     cluster = require('cluster'),
     os = require('os');
 
+const num_processes = require('os').cpus().length;
 const io_redis = require('socket.io-redis');
 const farmhash = require('farmhash');
 const port = process.env.PORT || 8080;
+
+const userRoutes = require('./routes/api/user'),
+    authRoutes = require('./routes/api/auth');
 
 if (cluster.isMaster) {
     let workers = [];
@@ -47,19 +51,32 @@ if (cluster.isMaster) {
     });
 } else {
     let app = express();
-    app.use(express.static(__dirname + '/public'));
+    app.use(express.json());
     app.use(helmet());
     app.use(hpp());
     
+    // Mongo Connection
+    mongoose.connect(process.env.DB_URL, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => console.log('Connected to dB!'))
+    .catch(e => console.log(e));
+
     // Cookie Configs
-    app.use(
-        session({
-            name: 'session',
-            secret: process.env.SESSION_SECRET,
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-        })
-    );
-    app.use(csurf());
+    // app.use(
+    //     session({
+    //         name: 'session',
+    //         secret: process.env.SESSION_SECRET,
+    //         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    //     })
+    // );
+    // app.use(csurf());
+
+    // Use API routes
+    app.use('/api/user', userRoutes);
+    app.use('/api/auth', authRoutes);
 
     // Don't expose our internal server to the outside world.
     const server = app.listen(0, 'localhost');

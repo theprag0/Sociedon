@@ -10,6 +10,8 @@ function Login(props) {
     // Handle login form submission
     const handleSubmit = e => {
         e.preventDefault();
+        resetUsername();
+        resetPassword();
     } 
 
     return(
