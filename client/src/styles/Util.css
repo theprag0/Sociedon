@@ -1,0 +1,78 @@
+/* Alert Styles */
+.Alert p,
+.Alert i {
+	animation: fadein 1s linear;
+	padding: 0 10px;
+}
+
+.open-alert {
+	display: block;
+	animation: fill-in 0.5s forwards;
+	-webkit-animation: fill-in 0.5s forwards;
+	-moz-animation: fill-in 0.5s forwards;
+	/* animation-timing-function: linear;
+	-webkit-animation-timing-function: linear;
+	-moz-animation-timing-function: linear; */
+	margin: 0 auto;
+	--borderWidth: 3px;
+	position: relative;
+	border-radius: var(--borderWidth);
+	background-color: #fbfbf9;
+	padding: 0 10px;
+	box-shadow: -1px 6px 9px 3px rgba(0, 0, 0, 0.32);
+	-webkit-box-shadow: -1px 6px 9px 3px rgba(0, 0, 0, 0.32);
+	-moz-box-shadow: -1px 6px 9px 3px rgba(0, 0, 0, 0.32);
+}
+.open-alert:after {
+	content: '';
+	position: absolute;
+	top: calc(-1 * var(--borderWidth));
+	left: calc(-1 * var(--borderWidth));
+	height: calc(100% + var(--borderWidth) * 2);
+	width: calc(100% + var(--borderWidth) * 2);
+	background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+	border-radius: calc(2 * var(--borderWidth));
+	z-index: -1;
+	animation: animatedgradient 3s ease alternate infinite;
+	background-size: 300% 300%;
+}
+
+.close-alert {
+	margin: 0 auto;
+	display: none;
+	/* transition: opacity 1s ease-out;
+	opacity: 0;
+	height: 0; */
+	overflow: hidden;
+}
+
+@keyframes fill-in {
+	0% {
+		width: 0%;
+	}
+	100% {
+		width: 50%;
+		height: 100%;
+	}
+}
+
+@keyframes fadein {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes animatedgradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}

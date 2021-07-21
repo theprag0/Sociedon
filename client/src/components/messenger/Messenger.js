@@ -1,21 +1,22 @@
-import React, { useEffect } from 'react';
-//import { Redirect } from 'react-router-dom';
-//import { AuthenticationContext } from '../../contexts/auth.context';
+import React, { useEffect, useRef } from 'react';
+import Logout from '../auth/Logout';
+import Alert from '../utility/Alert';
+import io from 'socket.io-client';
 
-function Messenger(props) {
-    //const {isAuthenticated} = useContext(AuthenticationContext);
+function Messenger({history}) {
+    const popupMsg = useRef(null);
 
     useEffect(() => {
-        // if(!isAuthenticated) {
-        //     return <Redirect to="/"/>
-        // }
-    });
-    // if(!isAuthenticated) {
-    //     return <Redirect to="/"/>
-    // }
+        popupMsg.current = history.location.state ? history.location.state.message : null;
+        history.replace({...history.location, state: undefined});
+    }, [history]);
 
     return (
-        <h1>Messenger</h1>
+        <div>
+            <Logout />
+            {popupMsg.current !== null ? <Alert message={popupMsg.current} type="success"/> : null}
+            <h1>Messenger</h1>
+        </div>
     );
 }
 

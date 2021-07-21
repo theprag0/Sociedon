@@ -11,7 +11,7 @@ const User = require('../../models/User');
 router.post('/login', async (req, res) => {
     try{
         const {email, password} = req.body;
-
+        
         // Validate fields 
         if(!email || !password) return res.status(400).json({msg: 'Please enter all fields'});
 
