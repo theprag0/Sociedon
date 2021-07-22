@@ -7,7 +7,7 @@ function auth(req, res, next) {
     try{
         // Verify Token
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-            if(err) return res.json({msg: 'Failed to auth token'});
+            if(err) return res.status(400).json({msg: 'Failed to auth token'});
             else{
                 req.user = decoded;
                 next();

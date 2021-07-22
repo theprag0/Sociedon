@@ -81,13 +81,23 @@ if (cluster.isMaster) {
     // Don't expose our internal server to the outside world.
     const server = app.listen(0, 'localhost');
     // console.log("Worker listening...");    
-    const io = socketio(server);
+    const io = socketio(server, {
+        cors: {
+            origin: "http://localhost:3000",
+            methods: ["GET", "POST"],
+            allowedHeaders: ["my-custom-header"],
+            credentials: true
+          }
+    });
 
     io.adapter(io_redis({ host: 'localhost', port: 6379 }));
 
-    io.on('connection', function(socket) {
-        socketMain(io,socket);
-        // console.log(`connected to worker: ${cluster.worker.id}`);
+    io.on('connection', (socket) => {
+        // socketMain(io,socket);
+        console.log(`connected to worker: ${cluster.worker.id}`);
+        socket.on('disconnect', (reason) => {
+            socket.disconnect(true);
+        });
     });
 
     // Listen to messages sent from the master. Ignore everything else.
@@ -102,5 +112,7 @@ if (cluster.isMaster) {
 
         connection.resume();
     });
+
+    module.exports = {io, app};
 }
 
