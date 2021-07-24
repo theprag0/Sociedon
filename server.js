@@ -17,7 +17,8 @@ const farmhash = require('farmhash');
 const port = process.env.PORT || 8080;
 
 const userRoutes = require('./routes/api/user'),
-    authRoutes = require('./routes/api/auth');
+    authRoutes = require('./routes/api/auth'),
+    messengerRoutes = require('./routes/api/messenger');
 
 if (cluster.isMaster) {
     let workers = [];
@@ -77,6 +78,7 @@ if (cluster.isMaster) {
     // Use API routes
     app.use('/api/user', userRoutes);
     app.use('/api/auth', authRoutes);
+    app.use('/messenger', messengerRoutes);
 
     // Don't expose our internal server to the outside world.
     const server = app.listen(0, 'localhost');

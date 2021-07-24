@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useContext } from 'react';
 import io from 'socket.io-client';
-import Logout from '../auth/Logout';
-import Alert from '../utility/Alert';
 import { AuthenticationContext } from '../../contexts/auth.context';
+import Logout from '../auth/Logout';
+import Search from './Search';
+import Alert from '../utility/Alert';
 
 function Messenger({history, match}) {
     const {isAuthenticated} = useContext(AuthenticationContext);
@@ -23,13 +24,14 @@ function Messenger({history, match}) {
             console.log(socket.id)
             socket.emit('currUser', {userId: match.params.id});
         });
-    }, []);
+    }, [match.params.id]);
 
     return (
         <div>
             <Logout />
             {popupMsg.current !== null ? <Alert message={popupMsg.current} type="success"/> : null}
             <h1>Messenger</h1>
+            <Search type="friends"/>
         </div>
     );
 }
