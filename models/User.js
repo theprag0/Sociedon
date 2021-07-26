@@ -35,6 +35,18 @@ const userSchema = new Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Arena'
             }
+        ],
+        friendRequests: [
+            {
+                from: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
+                },
+                status: {
+                    type: 'String',
+                    default: 'Pending'
+                }
+            }
         ]
     }
 );

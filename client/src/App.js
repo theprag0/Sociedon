@@ -5,7 +5,6 @@ import Home from './components/home/Home';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Messenger from './components/messenger/Messenger';
-import './App.css';
 
 function App() {
   return (
