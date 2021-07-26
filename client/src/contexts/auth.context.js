@@ -28,7 +28,7 @@ export function AuthenticationProvider(props) {
             })
             .catch(err => {
                 setIsAuthenticated(false);
-                setUserLoading(true);
+                setUserLoading(false);
                 setStatus(err.response.status);
                 setMsg(err.response.data.msg);
                 setUser(null);

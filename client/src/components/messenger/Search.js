@@ -2,9 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import useInputState from '../../hooks/useInputState';
 import { AuthenticationContext } from '../../contexts/auth.context';
+import SearchList from './SearchList';
 import '../../styles/Messenger.css';
 
-function Search({type}) {
+function Search({type, showAlert}) {
     const [searchQuery, setSearchQuery] = useInputState('');
     const [result, setResult] = useState([]);
     const {token} = useContext(AuthenticationContext);
@@ -14,21 +15,16 @@ function Search({type}) {
         const config = {
             headers: {'x-auth-token': token}
         };
-        if(searchQuery !== '') {
+        if(searchQuery === '') {
+            setResult([]);
+        } else {
             axios.post('/messenger/search', {query: searchQuery, type}, config)
                 .then(res => {
                     setResult(res.data.result);
                 })
                 .catch(err => console.log(err));
-        } else {
-            setResult([]);
         }
     }, [searchQuery, token, type]);
-
-    // Send friend request 
-    const handleClick = e => {
-        
-    }
 
     return (
         <div className="Search">
@@ -45,10 +41,12 @@ function Search({type}) {
                 ?
                 <ul>
                     {result.map(r => (
-                        <li key={r._id || r.msg}>
-                            {(type === 'friends' ? r.username : r.name) || r.msg}
-                            <button onClick={handleClick}><i class="fas fa-user-plus"></i></button>
-                        </li>
+                        <SearchList 
+                            key={r._id || r.msg} 
+                            userData={r} 
+                            type={type}
+                            showAlert={showAlert}
+                        />
                     ))}
                 </ul>
                 : null 

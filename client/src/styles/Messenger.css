@@ -12,12 +12,13 @@
 }
 
 .Search ul {
-	width: 10rem;
+	width: fit-content;
 	height: fit-content;
 	margin-top: 0;
 	border-radius: 5px;
 	position: absolute;
-	z-index: 10;
+	background-color: #fff;
+	z-index: 1;
 	box-shadow: 2px 7px 16px 3px rgba(0, 0, 0, 0.39);
 	-webkit-box-shadow: 2px 7px 16px 3px rgba(0, 0, 0, 0.39);
 	-moz-box-shadow: 2px 7px 16px 3px rgba(0, 0, 0, 0.39);
@@ -26,5 +27,31 @@
 .Search ul li {
 	list-style: none;
 	padding: 10px;
-	padding-left: 0;
+	font-family: 'Nunito', sans-serif;
+	border-radius: 4px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.Search ul li:hover {
+	background-color: #eee;
+	border-radius: 5px;
+}
+
+.Search ul li p {
+	margin-left: 1rem;
+}
+
+.Search ul li button {
+	margin: 5px;
+	margin-left: 1rem;
+	background-color: #4849a1;
+	border-radius: 50%;
+	border: none;
+	padding: 10px;
+}
+
+.Search ul li button i {
+	color: #fff;
 }
