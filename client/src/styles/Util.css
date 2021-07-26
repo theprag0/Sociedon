@@ -2,7 +2,7 @@
 .Alert p,
 .Alert i {
 	animation: fadein 1s linear;
-	padding: 0 10px;
+	padding: 10px;
 }
 
 .open-alert {
