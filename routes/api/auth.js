@@ -47,7 +47,7 @@ router.get('/user', auth, async (req, res) => {
         if(foundUser) return res.json({
             username: foundUser.username,
             email: foundUser.email,
-            id: foundUser._id
+            userId: foundUser._id
         });
     } catch(err) {
         console.log(err);

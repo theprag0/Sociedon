@@ -8,7 +8,7 @@ export function AuthenticationProvider(props) {
     const [userLoading, setUserLoading] = useState(true);
     const [msg, setMsg] = useState('');
     const [status, setStatus] = useState(null);
-    const [user, setUser] = useState(null);
+    const [userData, setUserData] = useState({});
     const [token, setToken] = useState(window.localStorage.getItem('token'));
 
     useEffect(() => {
@@ -24,14 +24,15 @@ export function AuthenticationProvider(props) {
                 setIsAuthenticated(true);
                 setUserLoading(false);
                 setStatus(res.status);
-                setUser(res.data)
+                setUserData(res.data)
             })
             .catch(err => {
+                console.log(err)
                 setIsAuthenticated(false);
                 setUserLoading(false);
                 setStatus(err.response.status);
                 setMsg(err.response.data.msg);
-                setUser(null);
+                setUserData(null);
                 window.localStorage.removeItem('token');
             });
     }, [token]);
@@ -45,8 +46,8 @@ export function AuthenticationProvider(props) {
         setMsg, 
         status, 
         setStatus, 
-        user, 
-        setUser,
+        userData, 
+        setUserData,
         token, 
         setToken
     };

@@ -14,7 +14,7 @@ function Register(props) {
     const [day, setDay, resetDay] = useInputState('');
     const [year, setYear, resetYear] = useInputState('');
     const [error, setError] = useState(null);
-    const {setIsAuthenticated, setStatus, setUser, setUserLoading, setToken} = useContext(AuthenticationContext);
+    const {setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken} = useContext(AuthenticationContext);
 
     // Date of birth data
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -54,16 +54,17 @@ function Register(props) {
                 console.log(res)
                 setIsAuthenticated(true);
                 setUserLoading(false);
-                setUser(res.data.user);
+                setUserData(res.data.user);
                 setStatus(res.status);
                 setToken(res.data.token);
                 window.localStorage.setItem('token', res.data.token);
                 props.history.push(`/messenger/${res.data.user.id}`);
             })
             .catch(err => {
+                console.log(err);
                 setIsAuthenticated(false);
                 setUserLoading(true);
-                setUser(null);
+                setUserData(null);
                 setStatus(err.response.status);
                 setError(err.response.data.msg);
             });

@@ -8,7 +8,7 @@ function Login(props) {
     // Handle Form Inputs
     const [email, setEmail, resetEmail] = useInputState('');
     const [password, setPassword, resetPassword] = useInputState('');
-    const {setIsAuthenticated, setStatus, setUser, setUserLoading, setToken, setMsg} = useContext(AuthenticationContext);
+    const {setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken, setMsg} = useContext(AuthenticationContext);
 
     // Handle login form submission
     const handleSubmit = e => {
@@ -19,7 +19,7 @@ function Login(props) {
                 setIsAuthenticated(true);
                 setUserLoading(false);
                 setStatus(res.status);
-                setUser(res.data.user);
+                setUserData(res.data.user);
                 setToken(res.data.token);
                 window.localStorage.setItem('token', res.data.token);
                 props.history.push({
@@ -28,10 +28,11 @@ function Login(props) {
                 });
             })
             .catch(err => {
+                console.log(err)
                 setIsAuthenticated(false);
                 setUserLoading(true);
                 setStatus(err.response.status);
-                setUser(null);
+                setUserData(null);
                 setToken(null);
                 setMsg(err.response.data.msg);
             });
