@@ -6,19 +6,16 @@ const express = require('express'),
     helmet = require('helmet'),
     hpp = require('hpp'),
     // csurf = require('csurf'),
-    http = require('http'),
     net = require('net'),
-    cluster = require('cluster'),
-    os = require('os');
+    cluster = require('cluster');
 
 const num_processes = require('os').cpus().length;
 const io_redis = require('socket.io-redis');
 const farmhash = require('farmhash');
 const port = process.env.PORT || 8080;
 
-const userRoutes = require('./routes/api/user'),
-    authRoutes = require('./routes/api/auth'),
-    messengerRoutes = require('./routes/api/messenger');
+const Online = require('./models/Online');
+const socketMain = require('./sockets/socketMain');
 
 if (cluster.isMaster) {
     let workers = [];
@@ -75,11 +72,6 @@ if (cluster.isMaster) {
     // );
     // app.use(csurf());
 
-    // Use API routes
-    app.use('/api/user', userRoutes);
-    app.use('/api/auth', authRoutes);
-    app.use('/messenger', messengerRoutes);
-
     // Don't expose our internal server to the outside world.
     const server = app.listen(0, 'localhost');
     // console.log("Worker listening...");    
@@ -94,13 +86,50 @@ if (cluster.isMaster) {
 
     io.adapter(io_redis({ host: 'localhost', port: 6379 }));
 
-    io.on('connection', (socket) => {
-        // socketMain(io,socket);
+    io.on('connection', async (socket) => {
+        const userId = socket.handshake.query.userId;
+        // Check for existing connection
+        const existingOnlineUser = await Online.findOne({user: userId});
+        if(existingOnlineUser) {
+            await Online.findOneAndUpdate({user: userId}, {
+                $push: {
+                    socketId: socket.id
+                }
+            });
+        } else {
+            const newOnlineUser = new Online({
+                user: userId,
+                status: 'online',
+                socketId: socket.id
+            });
+            await newOnlineUser.save();
+        }
+
+        socketMain(io,socket);
         console.log(`connected to worker: ${cluster.worker.id}`);
-        socket.on('disconnect', (reason) => {
+        socket.on('disconnect', async (reason) => {
+            // Check if user has more than one connections
+            const foundUser = await Online.findOne({user: userId});
+            if(foundUser.socketId.length > 1) {
+                const updatedArray = await Online.findOneAndUpdate({user: userId}, {
+                    $pull: {socketId: socket.id} 
+                });
+            } else {
+                await Online.deleteOne({
+                    user: socket.handshake.query.userId
+                });
+            }
             socket.disconnect(true);
         });
     });
+    
+    // Use API routes
+    const userRoutes = require('./routes/api/user'),
+        authRoutes = require('./routes/api/auth'),
+        messengerRoutes = require('./routes/api/messenger')(io);
+    app.use('/api/user', userRoutes);
+    app.use('/api/auth', authRoutes);
+    app.use('/messenger', messengerRoutes);
 
     // Listen to messages sent from the master. Ignore everything else.
     process.on('message', function(message, connection) {
@@ -114,7 +143,27 @@ if (cluster.isMaster) {
 
         connection.resume();
     });
-
-    module.exports = {io, app};
 }
 
+function addClientToMap(userName, socketId, onlineUsersMap){
+    if (!onlineUsersMap.has(userName)) {
+        //when user is joining first time
+        onlineUsersMap.set(userName, new Set([socketId]));
+    } else{
+        //user had already joined from one client and now joining using another
+        //client
+        onlineUsersMap.get(userName).add(socketId);
+    }
+}
+
+function removeClientFromMap(userName, socketId, onlineUsersMap){
+    if (onlineUsersMap.has(userName)) {
+        let userSocketIdSet = onlineUsersMap.get(userName);
+        userSocketIdSet.delete(socketId);
+        //if there are no clients for a user, remove that user from online
+        list (map)
+        if (userSocketIdSet.size ==0 ) {
+            onlineUsersMap.delete(userName);
+        }
+    }
+}
