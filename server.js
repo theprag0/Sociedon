@@ -58,6 +58,7 @@ if (cluster.isMaster) {
         useNewUrlParser: true,
         useCreateIndex: true,
         useUnifiedTopology: true,
+        useFindAndModify: false
     })
     .then(() => console.log('Connected to dB!'))
     .catch(e => console.log(e));

@@ -41,7 +41,7 @@ function Messenger({history, match}) {
     return (
         <React.Fragment>
             <Logout />
-            <Notifications userId={match.params.id}/>
+            <Notifications userId={match.params.id} showAlert={showAlert}/>
             {Object.keys(alert).length !== 0 ? <Alert message={alert.message} type={alert.type}/> : ''}
             {popupMsg.current !== null ? <Alert message={popupMsg.current} type="success"/> : null}
             <h1>Messenger</h1>

@@ -24,9 +24,21 @@ const returnRouter = io => {
                 
                 // Return if no users found
                 if(foundUsers.length === 0) return res.json({result: [{msg: 'No users found!'}]}); 
-    
+
+                // Check if current is already friends or has recieved a request from found user
+                const currUser = await User.findOne({_id: req.user.id}, {friends: 1, friendRequests: 1}).populate('friendRequests');
+                console.log(currUser);
+                const filterResponse = foundUsers.filter(f => {
+                    const isFriend = currUser.friends.includes(f._id);
+                    const hasRequested = currUser.friendRequests.some(request => request.from.equals(f._id));
+                    console.log(`Has Requested: ${hasRequested}, from: ${f._id}`)
+                    if(!isFriend && !hasRequested) {
+                        return f;
+                    }
+                });
+
                 // Check if user already has a friend request from current-user 
-                const filterResponse = foundUsers.map(f => {
+                const mapResponse = filterResponse.map(f => {
                     if(f.friendRequests.length > 0) {
                         for(r of f.friendRequests) {
                             if(r.from.equals(req.user.id)) {
@@ -38,7 +50,7 @@ const returnRouter = io => {
                 });
                 
                 // Return found users
-                return res.status(200).json({result: filterResponse});
+                return res.status(200).json({result: mapResponse});
             } else {
                 const foundArenas = await Arena.find({name: new RegExp(query, 'i')}, {name: 1, _id: 1});
                 if(foundArenas.length === 0) return res.json({result: [{msg: 'No arenas found!'}]});
@@ -52,7 +64,7 @@ const returnRouter = io => {
     // @route PUT /messenger/add
     // @desc Send friend requests to users
     // @access Private
-    router.put('/add', async (req, res) => {
+    router.put('/add', auth, async (req, res) => {
         try {
             if(req.body.type === 'newRequest'){
 
@@ -95,6 +107,28 @@ const returnRouter = io => {
                 });
             } else if(req.body.type === 'requestActions') {
                 // Accept or Reject friend request
+                const {fromId, currUserId} = req.body;
+                if(req.body.action === 'accept') {
+                    const addFriendAInB = await User.findByIdAndUpdate({_id: currUserId}, {$push: {friends: fromId}});
+                    if(addFriendAInB) {
+                        const addFriendBInA = await User.findByIdAndUpdate({_id: fromId}, {$push: {friends: currUserId}})
+                        if(addFriendBInA) {
+                            await User.findByIdAndUpdate({_id: currUserId}, {$pull: {
+                                friendRequests: {from: fromId}
+                            }});
+                            await User.findByIdAndUpdate({_id: fromId}, {$pull: {
+                                friendRequests: {from: currUserId}
+                            }});
+                        }
+                    }
+                    if(!addFriendAInB) return res.json({msg: 'Failed to accept friend request, Please try again later.'});
+                    return res.json({msg: 'Friend added!'});
+                } else if(req.body.action === 'decline') {
+                    const deleteRequest = await User.findByIdAndUpdate({_id: currUserId}, {$pull: {
+                        friendRequests: {from: fromId}
+                    }});
+                    return res.json({msg: 'Friend request declined!'});
+                }
             }
         } catch(err) {
             console.log(err);

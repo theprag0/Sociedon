@@ -1,17 +1,20 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { AuthenticationContext } from '../../contexts/auth.context';
 import { SocketContext } from '../../contexts/socket.context';
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import NotificationItem from './NotificationItem';
 import useStyles from '../../styles/NotificationStyles';
 
-function Notifications({userId}) {
+function Notifications({userId, showAlert}) {
     const {socket} = useContext(SocketContext);
+    const {token} = useContext(AuthenticationContext);
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [friendRequests, setFriendRequests] = useState([]);
@@ -62,6 +65,32 @@ function Notifications({userId}) {
         }
     }, [socket]);
 
+    // Handle friend request actions
+    const handleRequest = (e, currUserId, fromId) => {
+        console.log(e.target.title)
+        const config = {
+            headers: {
+                'x-auth-token': token
+            }
+        }
+        axios.put('/messenger/add', {
+            type: 'requestActions',
+            action: e.target.title,
+            currUserId,
+            fromId
+        }, config)
+        .then(res => {
+            console.log(res);
+            const filterFriendRequests = friendRequests.filter(f => f.fromId !== fromId);
+            setFriendRequests(filterFriendRequests);
+            showAlert(res.data.msg, 'success');
+        })
+        .catch(err => {
+            console.log(err);
+            showAlert(err.response.data.msg, 'error');
+        });
+    }
+
     return (
         <div className={classes.root}>
             <Button
@@ -93,11 +122,12 @@ function Notifications({userId}) {
                                 friendRequests.length > 0 
                                 ?
                                 friendRequests.map(f => (
-                                    <MenuItem key={f.fromId} className={classes.request}>
-                                        {f.fromUsername}
-                                        <i className={`fas fa-check ${classes.accept}`}></i>
-                                        <i className={`fas fa-times ${classes.reject}`}></i>
-                                    </MenuItem>
+                                    <NotificationItem 
+                                        key={f.fromId} 
+                                        requestData={f} 
+                                        userId={userId}
+                                        handleRequest={handleRequest}
+                                    />
                                 ))
                                 :
                                 <MenuItem className={classes.request}>
