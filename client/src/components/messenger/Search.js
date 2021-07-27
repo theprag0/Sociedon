@@ -43,7 +43,7 @@ function Search({type, showAlert}) {
                     {result.map(r => (
                         <SearchList 
                             key={r._id || r.msg} 
-                            userData={r} 
+                            userSearchData={r} 
                             type={type}
                             showAlert={showAlert}
                         />

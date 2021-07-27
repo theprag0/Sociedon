@@ -50,6 +50,7 @@
 	border-radius: 50%;
 	border: none;
 	padding: 10px;
+	cursor: pointer;
 }
 
 .Search ul li button i {

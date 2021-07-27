@@ -6,7 +6,7 @@ function Logout(props) {
     const { 
         setIsAuthenticated,  
         setUserLoading,  
-        setUser, 
+        setUserData, 
         setToken
     } = useContext(AuthenticationContext);
 
@@ -14,7 +14,7 @@ function Logout(props) {
         window.localStorage.removeItem('token');
         setIsAuthenticated(false);
         setUserLoading(true);
-        setUser(null);
+        setUserData({});
         setToken(null);
         props.history.push('/');
     }

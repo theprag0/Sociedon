@@ -3,22 +3,19 @@ import axios from 'axios';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import '../../styles/Messenger.css';
 
-function SearchList({userData, type, showAlert}) {
+function SearchList({userSearchData, type, showAlert}) {
     const [requestSent, setRequestSent] = useState(false);
-    const {user} = useContext(AuthenticationContext);
+    const {userData} = useContext(AuthenticationContext);
 
     // Check if request already exists
     useEffect(() => {
-        if(userData.sent) setRequestSent(true);
-    }, [userData.sent]);
+        if(userSearchData.sent) setRequestSent(true);
+    }, [userSearchData.sent]);
 
     // Send friend request 
     const handleClick = e => {
-        // e.target
-        console.dir(e.currentTarget)
-        axios.put('/messenger/add', {from: user.id, recipient: userData._id})
+        axios.put('/messenger/add', {from: userData.userId, recipient: userSearchData._id, type: 'newRequest'})
             .then(res => {
-                console.log(res)
                 const message = res.data.msg;
                 showAlert(message, 'success');
                 setRequestSent(true);
@@ -31,9 +28,11 @@ function SearchList({userData, type, showAlert}) {
 
     return (
         <li>
-            <p>{(type === 'friends' ? userData.username : userData.name) || userData.msg}</p>
+            <p>
+                {(type === 'friends' ? userSearchData.username : userSearchData.name) || userSearchData.msg}
+            </p>
             {
-                userData.msg
+                userSearchData.msg
                 ?
                 ''
                 :

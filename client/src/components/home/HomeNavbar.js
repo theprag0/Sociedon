@@ -4,14 +4,14 @@ import { AuthenticationContext } from '../../contexts/auth.context';
 import Logout from '../auth/Logout';
 
 function HomeNavbar(props) {
-    const {isAuthenticated, user} = useContext(AuthenticationContext);
+    const {isAuthenticated, userData} = useContext(AuthenticationContext);
 
     return(
         <nav>
-            {(isAuthenticated && user) ? (
+            {(isAuthenticated && userData) ? (
                 <>
                     <Logout />
-                    <NavLink exact to={`/messenger/${user.id}`}>Open Sociedon</NavLink>
+                    <NavLink exact to={`/messenger/${userData.userId}`}>Open Sociedon</NavLink>
                 </>
             ) : (
                 <>
