@@ -20,7 +20,7 @@ router.post('/login', async (req, res) => {
         bcrypt.compare(password, foundUser.password)
         .then(isMatch => {
             if(!isMatch) return res.status(400).json({msg: 'Invalid Credentials!'});
-            jwt.sign({id: foundUser._id}, process.env.JWT_SECRET, {expiresIn: 3600}, (err, token) => {
+            jwt.sign({id: foundUser._id}, process.env.JWT_SECRET, (err, token) => {
                 if(err) throw err;
                 res.json({
                     token,

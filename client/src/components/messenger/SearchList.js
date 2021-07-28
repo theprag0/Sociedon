@@ -5,7 +5,7 @@ import '../../styles/Messenger.css';
 
 function SearchList({userSearchData, type, showAlert}) {
     const [requestSent, setRequestSent] = useState(false);
-    const {userData} = useContext(AuthenticationContext);
+    const {userData, token} = useContext(AuthenticationContext);
 
     // Check if request already exists
     useEffect(() => {
@@ -14,7 +14,10 @@ function SearchList({userSearchData, type, showAlert}) {
 
     // Send friend request 
     const handleClick = e => {
-        axios.put('/messenger/add', {from: userData.userId, recipient: userSearchData._id, type: 'newRequest'})
+        const config = {
+            headers: {'x-auth-token': token}
+        }
+        axios.put('/messenger/add', {from: userData.userId, recipient: userSearchData._id, type: 'newRequest'}, config)
             .then(res => {
                 const message = res.data.msg;
                 showAlert(message, 'success');

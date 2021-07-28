@@ -24,6 +24,16 @@ const userSchema = new Schema(
             type: Date,
             default: Date.now
         },
+        status: {
+            type: String,
+            default: 'offline'
+        },
+        socketId: [
+            {
+                type: String,
+                required: true
+            }
+        ],
         friends: [
             {
                 type: mongoose.Schema.Types.ObjectId,

@@ -1,3 +1,41 @@
+.Messenger {
+	height: 100vh;
+	width: 100vw;
+}
+
+.Messenger-body {
+	float: left;
+	width: 50%;
+	height: 100vh;
+}
+
+/* Sidebar */
+.Sidebar {
+	float: left;
+	height: 100vh;
+	width: 25%;
+	background-color: #f9f9fc;
+	display: flex;
+	align-items: center;
+}
+.Sidebar-friends {
+	font-family: 'Rubik', sans-serif;
+	height: 94%;
+	margin: 0 1.5rem;
+	letter-spacing: 1px;
+}
+
+.SidebarPanel {
+	height: 94%;
+	width: 15%;
+	margin: auto;
+	margin-left: 15px;
+	margin-right: 0;
+	background-color: #4849a1;
+	border-radius: 12px;
+	padding: 10px;
+}
+
 /* Search Bar */
 .Search {
 	margin: 10px;
@@ -55,4 +93,23 @@
 
 .Search ul li button i {
 	color: #fff;
+}
+
+.spinner {
+	width: 10rem;
+	margin: 0 auto;
+}
+.Search ul li img {
+	width: 100%;
+	height: 2rem;
+	margin: 0 auto;
+}
+
+/* Utility classes */
+.sidebar-icon-1 {
+	background: #efeff5;
+	color: #9e9ead;
+	border-radius: 50%;
+	padding: 7px;
+	display: inline-block;
 }

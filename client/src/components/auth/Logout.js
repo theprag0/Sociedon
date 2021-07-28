@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { withRouter } from 'react-router';
 import { AuthenticationContext } from '../../contexts/auth.context';
+import { SocketContext } from '../../contexts/socket.context';
 
 function Logout(props) {
     const { 
@@ -9,6 +10,7 @@ function Logout(props) {
         setUserData, 
         setToken
     } = useContext(AuthenticationContext);
+    const {socket} = useContext(SocketContext);
 
     const handleLogout = () => {
         window.localStorage.removeItem('token');
@@ -16,6 +18,7 @@ function Logout(props) {
         setUserLoading(true);
         setUserData({});
         setToken(null);
+        socket.disconnect();
         props.history.push('/');
     }
 
