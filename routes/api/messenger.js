@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
 const Arena = require('../../models/Arena');
-const Online = require('../../models/Online');
 const auth = require('../../middleware/auth');
 
 const returnRouter = io => {
@@ -27,11 +26,9 @@ const returnRouter = io => {
 
                 // Check if current is already friends or has recieved a request from found user
                 const currUser = await User.findOne({_id: req.user.id}, {friends: 1, friendRequests: 1}).populate('friendRequests');
-                console.log(currUser);
                 const filterResponse = foundUsers.filter(f => {
                     const isFriend = currUser.friends.includes(f._id);
                     const hasRequested = currUser.friendRequests.some(request => request.from.equals(f._id));
-                    console.log(`Has Requested: ${hasRequested}, from: ${f._id}`)
                     if(!isFriend && !hasRequested) {
                         return f;
                     }
@@ -48,7 +45,7 @@ const returnRouter = io => {
                     }
                     return {username: f.username, _id: f._id};
                 });
-                
+                if(mapResponse.length === 0) return res.json({result: [{msg: 'No users found!'}]}); 
                 // Return found users
                 return res.status(200).json({result: mapResponse});
             } else {
@@ -62,7 +59,7 @@ const returnRouter = io => {
     });
     
     // @route PUT /messenger/add
-    // @desc Send friend requests to users
+    // @desc Send, Accept or Decline friend requests to/from users
     // @access Private
     router.put('/add', auth, async (req, res) => {
         try {
@@ -82,10 +79,9 @@ const returnRouter = io => {
                 
                 // Check if recipient is online and emit notification
                 const fromUser = await User.findOne({_id: from}, {username: 1});
-                const recipientIsOnline = await Online.findOne({user: recipient});
-    
-                if(recipientIsOnline && recipientIsOnline.status === 'online') {
-                    recipientIsOnline.socketId.forEach(socket => {
+                // const recipientIsOnline = await Online.findOne({user: recipient});
+                if(recipientUser && recipientUser.status === 'online') {
+                    recipientUser.socketId.forEach(socket => {
                         io.to(socket).emit('newFriendRequest', {
                             fromUsername: fromUser.username, 
                             fromId: from,
@@ -116,15 +112,15 @@ const returnRouter = io => {
                             await User.findByIdAndUpdate({_id: currUserId}, {$pull: {
                                 friendRequests: {from: fromId}
                             }});
-                            await User.findByIdAndUpdate({_id: fromId}, {$pull: {
-                                friendRequests: {from: currUserId}
-                            }});
+                            // await User.findByIdAndUpdate({_id: fromId}, {$pull: {
+                            //     friendRequests: {from: currUserId}
+                            // }});
                         }
                     }
                     if(!addFriendAInB) return res.json({msg: 'Failed to accept friend request, Please try again later.'});
                     return res.json({msg: 'Friend added!'});
                 } else if(req.body.action === 'decline') {
-                    const deleteRequest = await User.findByIdAndUpdate({_id: currUserId}, {$pull: {
+                    await User.findByIdAndUpdate({_id: currUserId}, {$pull: {
                         friendRequests: {from: fromId}
                     }});
                     return res.json({msg: 'Friend request declined!'});
@@ -135,18 +131,38 @@ const returnRouter = io => {
         }
     });
 
-    // @route GET /messenger/add/requests/:userId
-    router.get('/add/requests/:userId', async (req, res) => {
-        const pendingRequests = await User.findById({_id: req.params.userId}, {friendRequests: 1}).populate('friendRequests.from', 'username');
+    // @route GET /messenger/retrieve/:type/:userId
+    // @desc Retrieve various data(pending requests, online friends etc.) for messenger
+    // @access Private
+    router.get('/retrieve/:type/:userId', auth, async (req, res) => {
+        if(req.params.type === 'friendRequests') {
+            const pendingRequests = await User.findById({_id: req.params.userId}, {friendRequests: 1}).populate('friendRequests.from', 'username');
+        
+            if(pendingRequests.length === 0 || !pendingRequests) {
+                return res.json({msg: 'No Pending Requests!'});
+            }
     
-        if(pendingRequests.length === 0 || !pendingRequests) {
-            return res.json({msg: 'No Pending Requests!'});
+            const filterRequests = pendingRequests.friendRequests.map(p => (
+                {fromId: p.from._id, fromUsername: p.from.username, status: p.status}
+            ));
+            return res.json({requests: filterRequests});
+        } else if(req.params.type === 'onlineFriends') {
+            // Get friends of current user
+            const currUser = await User.findById({_id: req.params.userId}, {friends: 1}).populate('friends');
+            const filterFriends = currUser.friends.filter(friend => friend.status === 'online');
+            const onlineFriends = filterFriends.map(friend => ({_id: friend._id, username: friend.username}));
+            
+            // Get all online users
+            // const onlineUsers = await Online.find({}).populate('user', 'username');
+            
+            // Filter friends of current user who are online
+            //const onlineFriends = getOnlineFriends(userFriends.friends, onlineUsers);
+            
+            if(!onlineFriends || onlineFriends.length === 0) return res.json({
+                msg: 'There are no friends online currently.'
+            });
+            return res.json({onlineFriends});
         }
-
-        const filterRequests = pendingRequests.friendRequests.map(p => (
-            {fromId: p.from._id, fromUsername: p.from.username, status: p.status}
-        ));
-        return res.json({requests: filterRequests});
     });
 
     return router;

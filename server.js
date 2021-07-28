@@ -14,7 +14,7 @@ const io_redis = require('socket.io-redis');
 const farmhash = require('farmhash');
 const port = process.env.PORT || 8080;
 
-const Online = require('./models/Online');
+const User = require('./models/User');
 const socketMain = require('./sockets/socketMain');
 
 if (cluster.isMaster) {
@@ -89,37 +89,48 @@ if (cluster.isMaster) {
 
     io.on('connection', async (socket) => {
         const userId = socket.handshake.query.userId;
-        // Check for existing connection
-        const existingOnlineUser = await Online.findOne({user: userId});
-        if(existingOnlineUser) {
-            await Online.findOneAndUpdate({user: userId}, {
-                $push: {
-                    socketId: socket.id
-                }
+
+        // Update status and socket id of current user
+        await User.findByIdAndUpdate({_id: userId}, {
+            status: 'online',
+            $push: {socketId: socket.id}
+        }, {new: true});
+
+        // Emit notification to all online friends
+        const currUserFriends = await User.findOne({_id: userId}, {friends: 1, username: 1}).populate('friends', 'status socketId');
+        if(currUserFriends && currUserFriends.friends.length > 0) {
+            const onlineFriends = currUserFriends.friends.filter(friend => friend.status === 'online');
+            onlineFriends.forEach(friend => {
+                friend.socketId.forEach(socket => {
+                    io.to(socket).emit('newOnlineFriend', {_id: userId, username: currUserFriends.username});
+                });
             });
-        } else {
-            const newOnlineUser = new Online({
-                user: userId,
-                status: 'online',
-                socketId: socket.id
-            });
-            await newOnlineUser.save();
         }
 
-        socketMain(io,socket);
+        socketMain(io, socket, userId);
         console.log(`connected to worker: ${cluster.worker.id}`);
-        socket.on('disconnect', async (reason) => {
+        socket.on('disconnect', async (reason) => {            
             // Check if user has more than one connections
-            const foundUser = await Online.findOne({user: userId});
-            if(foundUser.socketId.length > 1) {
-                const updatedArray = await Online.findOneAndUpdate({user: userId}, {
-                    $pull: {socketId: socket.id} 
-                });
+            const foundUser = await User.findOne({_id: userId}).populate('friends', 'status socketId');
+            if(foundUser && foundUser.socketId.length > 1) {
+                await User.findByIdAndUpdate({_id: userId}, {$pull: {socketId: socket.id}});
             } else {
-                await Online.deleteOne({
-                    user: socket.handshake.query.userId
+                await User.findByIdAndUpdate({_id: userId}, {
+                    status: 'offline', 
+                    $pull: {socketId: socket.id}
                 });
             }
+
+            // Emit notification to all online friends
+            if(foundUser && foundUser.friends.length > 0) {
+                const onlineFriends = foundUser.friends.filter(friend => friend.status === 'online');
+                onlineFriends.forEach(friend => {
+                    friend.socketId.forEach(socket => {
+                        io.to(socket).emit('newOfflineFriend', {_id: userId});
+                    });
+                });
+            }
+
             socket.disconnect(true);
         });
     });

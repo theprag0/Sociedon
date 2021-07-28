@@ -49,7 +49,10 @@ function Notifications({userId, showAlert}) {
 
     // Retrieve existing friend requests
     useEffect(() => {
-        axios.get(`/messenger/add/requests/${userId}`)
+        const config = {
+            headers: {'x-auth-token': token}
+        };
+        axios.get(`/messenger/retrieve/friendRequests/${userId}`, config)
             .then(res => {
                 setFriendRequests([...res.data.requests]);
             })
@@ -80,7 +83,6 @@ function Notifications({userId, showAlert}) {
             fromId
         }, config)
         .then(res => {
-            console.log(res);
             const filterFriendRequests = friendRequests.filter(f => f.fromId !== fromId);
             setFriendRequests(filterFriendRequests);
             showAlert(res.data.msg, 'success');
