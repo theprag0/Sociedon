@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const getDefaultPicture = require('../helpers/getDefaultPicture');
 
 const userSchema = new Schema(
     {
@@ -57,7 +58,11 @@ const userSchema = new Schema(
                     default: 'Pending'
                 }
             }
-        ]
+        ],
+        defaultImage: {
+            type: String,
+            default: getDefaultPicture()
+        }
     }
 );
 
