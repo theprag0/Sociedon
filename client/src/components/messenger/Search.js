@@ -7,7 +7,7 @@ import SearchList from './SearchList';
 import '../../styles/Messenger.css';
 import spinner from '../../assets/svg/spinner.svg';
 
-function Search({type, showAlert}) {
+function Search({type}) {
     const [searchQuery, setSearchQuery] = useInputState('');
     const [result, setResult] = useState([]);
     const [resultLoading, setResultLoading] = useState(false);
@@ -56,7 +56,6 @@ function Search({type, showAlert}) {
                             key={r._id || r.msg} 
                             userSearchData={r} 
                             type={type}
-                            showAlert={showAlert}
                         />
                     ))}
                 </ul>

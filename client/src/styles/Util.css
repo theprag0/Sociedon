@@ -6,22 +6,9 @@
 }
 
 .open-alert {
-	display: block;
-	animation: fill-in 0.5s forwards;
-	-webkit-animation: fill-in 0.5s forwards;
-	-moz-animation: fill-in 0.5s forwards;
-	/* animation-timing-function: linear;
-	-webkit-animation-timing-function: linear;
-	-moz-animation-timing-function: linear; */
-	margin: 0 auto;
 	--borderWidth: 3px;
 	position: relative;
 	border-radius: var(--borderWidth);
-	background-color: #fbfbf9;
-	padding: 0 10px;
-	box-shadow: -1px 6px 9px 3px rgba(0, 0, 0, 0.32);
-	-webkit-box-shadow: -1px 6px 9px 3px rgba(0, 0, 0, 0.32);
-	-moz-box-shadow: -1px 6px 9px 3px rgba(0, 0, 0, 0.32);
 }
 .open-alert:after {
 	content: '';
@@ -35,6 +22,7 @@
 	z-index: -1;
 	animation: animatedgradient 3s ease alternate infinite;
 	background-size: 300% 300%;
+	background-color: #fff;
 }
 
 .close-alert {

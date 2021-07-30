@@ -11,8 +11,9 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import NotificationItem from './NotificationItem';
 import useStyles from '../../styles/NotificationStyles';
+import { withSnackbar } from '../utility/SnackbarHOC';
 
-function Notifications({userId, showAlert}) {
+function Notifications({userId, snackbarShowMessage}) {
     const {socket} = useContext(SocketContext);
     const {token} = useContext(AuthenticationContext);
     const classes = useStyles();
@@ -57,13 +58,13 @@ function Notifications({userId, showAlert}) {
                 setFriendRequests([...res.data.requests]);
             })
             .catch(err => console.log(err));
-    }, [userId]);
+    }, [userId, token]);
 
     //Listen for new friend request
     useEffect(() => {
         if(socket !== null) {
             socket.on('newFriendRequest', ({fromId, fromUsername}) => {
-                setFriendRequests([...friendRequests, {fromId, fromUsername}]);
+                setFriendRequests(friendRequests => [...friendRequests, {fromId, fromUsername}]);
             });
         }
     }, [socket]);
@@ -85,11 +86,14 @@ function Notifications({userId, showAlert}) {
         .then(res => {
             const filterFriendRequests = friendRequests.filter(f => f.fromId !== fromId);
             setFriendRequests(filterFriendRequests);
-            showAlert(res.data.msg, 'success');
+            snackbarShowMessage(
+                e.target.title === 'accept' ? `${res.data.msg} 😎` : `${res.data.msg} 🤡`, 
+                'success'
+            );
         })
         .catch(err => {
             console.log(err);
-            showAlert(err.response.data.msg, 'error');
+            snackbarShowMessage(`${err.response.data.msg} 😔`, 'error');
         });
     }
 
@@ -146,4 +150,4 @@ function Notifications({userId, showAlert}) {
       );
 }
 
-export default Notifications;
+export default withSnackbar(Notifications);
