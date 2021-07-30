@@ -1,7 +1,18 @@
 import React, { useContext } from 'react';
 import { withRouter } from 'react-router';
+import Button from '@material-ui/core/Button';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { makeStyles } from '@material-ui/core/styles';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import { SocketContext } from '../../contexts/socket.context';
+
+const useStyles = makeStyles((theme) => ({
+    btn: {
+      padding: theme.spacing(2),
+      alignItems: 'center',
+      textTransform: 'none'
+    },
+}));
 
 function Logout(props) {
     const { 
@@ -12,18 +23,26 @@ function Logout(props) {
     } = useContext(AuthenticationContext);
     const {socket} = useContext(SocketContext);
 
+    const classes = useStyles();
+
     const handleLogout = () => {
         window.localStorage.removeItem('token');
         setIsAuthenticated(false);
         setUserLoading(true);
         setUserData({});
         setToken(null);
-        socket.disconnect();
+        socket.disconnect(true);
         props.history.push('/');
     }
 
     return (
-        <button onClick={handleLogout}>Logout</button>
+        <Button 
+            className={classes.btn} 
+            onClick={handleLogout}
+            endIcon={<ExitToAppIcon fontSize="small"/>}
+        > 
+            Logout
+        </Button>
     )
 }
 

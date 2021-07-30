@@ -1,23 +1,21 @@
-import React, { useEffect, useRef, useContext, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import io from 'socket.io-client';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
 import Sidebar from './sidebar/Sidebar';
-import Logout from '../auth/Logout';
 import Notifications from './Notifications';
 import Search from './Search';
-import Alert from '../utility/Alert';
+import { withSnackbar } from '../utility/SnackbarHOC';
 
-function Messenger({history, match}) {
-    const [alert, setAlert] = useState({});
+function Messenger({history, match, snackbarShowMessage}) {
     const {socket, setSocket} = useContext(SocketContext);
-    const {setFriends, setOnlineFriends, onlineFriends} = useContext(MessengerContext);
-    
-    const popupMsg = useRef(null);
+    const {setFriends} = useContext(MessengerContext);
 
     // Replace redirect history
     useEffect(() => {
-        popupMsg.current = history.location.state ? history.location.state.message : null;
+        if(history.location.state) {
+            snackbarShowMessage(history.location.state.message, 'welcome');
+        }
         history.replace({...history.location, state: undefined}); 
     }, [history]);
 
@@ -31,41 +29,54 @@ function Messenger({history, match}) {
     useEffect(() => {
         if(socket !== null) {
             socket.on('connect', () => {
-                console.log(socket.id)
-                socket.emit('currUser', {userId: match.params.id});
+                console.log(socket.id);
                 socket.on('friendsList', data => setFriends(data.friends));
-                socket.on('newOnlineFriend', data => setOnlineFriends([...onlineFriends, data]));
+                socket.on('newOnlineFriend', data => {
+                    console.log('new online friend')
+                    setFriends(friends => {
+                        const updateOnlineFriend = friends.map(f => {
+                            if(f._id === data._id) {
+                                return {...f, status: 'online'}
+                            } else {
+                                return f;
+                            }
+                        });
+                        return updateOnlineFriend;
+                    });
+                });
                 socket.on('newOfflineFriend', data => {
-                    const filterOnlineFriends = onlineFriends.filter(friend => friend._id !== data._id);
-                    setOnlineFriends(filterOnlineFriends);
+                    console.log('new offline friend')
+                    setFriends(friends => {
+                        const updateOfflineFriend = friends.map(f => {
+                            if(f._id === data._id) {
+                                return {...f, status: 'offline'}
+                            } else {
+                                return f;
+                            }
+                        });
+                        return updateOfflineFriend;
+                    });
                 });
             });
         }
         // Disconnect socket on component unmount
         return () => {
             if(socket !== null) {
-                socket.disconnect();
+                socket.disconnect(true);
             }
         }
     }, [socket, match.params.id]);
-
-    const showAlert = (message, type) => {
-        setAlert({message, type});
-    }
 
     return (
         <section className="Messenger">
             <Sidebar userId={match.params.id}/>
             <div className="Messenger-body">
-                <Logout />
-                <Notifications userId={match.params.id} showAlert={showAlert}/>
-                {Object.keys(alert).length !== 0 ? <Alert message={alert.message} type={alert.type}/> : ''}
-                {popupMsg.current !== null ? <Alert message={popupMsg.current} type="success"/> : null}
+                <Notifications userId={match.params.id}/>
                 <h1>Messenger</h1>
-                <Search type="friends" showAlert={showAlert}/>
+                <Search type="friends"/>
             </div>
         </section>
     );
 }
 
-export default Messenger;
+export default withSnackbar(Messenger);

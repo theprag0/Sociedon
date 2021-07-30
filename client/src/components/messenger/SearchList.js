@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthenticationContext } from '../../contexts/auth.context';
+import { withSnackbar } from '../utility/SnackbarHOC';
 import '../../styles/Messenger.css';
 
-function SearchList({userSearchData, type, showAlert}) {
+function SearchList({userSearchData, type, snackbarShowMessage}) {
     const [requestSent, setRequestSent] = useState(false);
     const {userData, token} = useContext(AuthenticationContext);
 
@@ -20,12 +21,12 @@ function SearchList({userSearchData, type, showAlert}) {
         axios.put('/messenger/add', {from: userData.userId, recipient: userSearchData._id, type: 'newRequest'}, config)
             .then(res => {
                 const message = res.data.msg;
-                showAlert(message, 'success');
+                snackbarShowMessage(`${message} 🐱‍🏍`, 'success');
                 setRequestSent(true);
             })
             .catch(err => {
                 console.log(err)
-                showAlert("Couldn't send friend request", 'error')
+                snackbarShowMessage("Couldn't send friend request 😔", 'error')
             });
     }
 
@@ -47,4 +48,4 @@ function SearchList({userSearchData, type, showAlert}) {
     );
 }
 
-export default SearchList;
+export default withSnackbar(SearchList);

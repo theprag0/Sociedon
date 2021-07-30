@@ -14,6 +14,9 @@ function alertHelper(type) {
             iconClass: 'fas fa-exclamation-circle',
             id: 'error',
             color: '#ff0033'
+        },
+        welcome: {
+            emoji: '🤩'
         }
     };
 

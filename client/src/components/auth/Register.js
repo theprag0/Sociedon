@@ -3,7 +3,7 @@ import axios from 'axios';
 import isDate from 'validator/lib/isDate';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import useInputState from '../../hooks/useInputState';
-import Alert from '../utility/Alert';
+import { withSnackbar } from '../utility/SnackbarHOC';
 
 function Register(props) {
     // Handle form input change
@@ -13,7 +13,6 @@ function Register(props) {
     const [month, setMonth, resetMonth] = useInputState('');
     const [day, setDay, resetDay] = useInputState('');
     const [year, setYear, resetYear] = useInputState('');
-    const [error, setError] = useState(null);
     const {setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken} = useContext(AuthenticationContext);
 
     // Date of birth data
@@ -66,7 +65,7 @@ function Register(props) {
                 setUserLoading(true);
                 setUserData(null);
                 setStatus(err.response.status);
-                setError(err.response.data.msg);
+                props.snackbarShowMessage(err.response.data.msg, 'error');
             });
 
         resetEmail();
@@ -79,7 +78,6 @@ function Register(props) {
 
     return(
         <div>
-            {error ? <Alert message={error} type="error"/> : null}
             <form onSubmit={handleSubmit}>
                 <label htmlFor="email">Email</label>
                 <input 
@@ -135,4 +133,4 @@ function Register(props) {
     );
 }
 
-export default Register;
+export default withSnackbar(Register);

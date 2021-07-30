@@ -79,7 +79,6 @@ const returnRouter = io => {
                 
                 // Check if recipient is online and emit notification
                 const fromUser = await User.findOne({_id: from}, {username: 1});
-                // const recipientIsOnline = await Online.findOne({user: recipient});
                 if(recipientUser && recipientUser.status === 'online') {
                     recipientUser.socketId.forEach(socket => {
                         io.to(socket).emit('newFriendRequest', {
@@ -146,23 +145,7 @@ const returnRouter = io => {
                 {fromId: p.from._id, fromUsername: p.from.username, status: p.status}
             ));
             return res.json({requests: filterRequests});
-        } else if(req.params.type === 'onlineFriends') {
-            // Get friends of current user
-            const currUser = await User.findById({_id: req.params.userId}, {friends: 1}).populate('friends');
-            const filterFriends = currUser.friends.filter(friend => friend.status === 'online');
-            const onlineFriends = filterFriends.map(friend => ({_id: friend._id, username: friend.username}));
-            
-            // Get all online users
-            // const onlineUsers = await Online.find({}).populate('user', 'username');
-            
-            // Filter friends of current user who are online
-            //const onlineFriends = getOnlineFriends(userFriends.friends, onlineUsers);
-            
-            if(!onlineFriends || onlineFriends.length === 0) return res.json({
-                msg: 'There are no friends online currently.'
-            });
-            return res.json({onlineFriends});
-        }
+        } 
     });
 
     return router;
