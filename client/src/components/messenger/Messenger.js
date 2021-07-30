@@ -1,15 +1,16 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import io from 'socket.io-client';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
 import Sidebar from './sidebar/Sidebar';
+import Chatbox from './Chatbox';
 import Notifications from './Notifications';
 import Search from './Search';
 import { withSnackbar } from '../utility/SnackbarHOC';
 
 function Messenger({history, match, snackbarShowMessage}) {
     const {socket, setSocket} = useContext(SocketContext);
-    const {setFriends} = useContext(MessengerContext);
+    const {setFriends, currentBody, setCurrentBody} = useContext(MessengerContext);
 
     // Replace redirect history
     useEffect(() => {
@@ -67,13 +68,28 @@ function Messenger({history, match, snackbarShowMessage}) {
         }
     }, [socket, match.params.id]);
 
+    // Set messenger body based on state
+    let messengerBody;
+    if(currentBody === 'home') {
+        messengerBody = (
+            <>
+                <h1>Messenger</h1>
+                <Search type="friends"/>
+            </>
+        )
+    } else if(currentBody === 'chatbox') {
+        messengerBody = <Chatbox />
+    }
+
     return (
         <section className="Messenger">
             <Sidebar userId={match.params.id}/>
             <div className="Messenger-body">
-                <Notifications userId={match.params.id}/>
-                <h1>Messenger</h1>
-                <Search type="friends"/>
+                {messengerBody}
+            </div>
+            <div className="infobar" style={{background: '#F4F4FA', width: '25%', height: '100vh', float: 'right'}}>
+
+            <Notifications userId={match.params.id}/>
             </div>
         </section>
     );

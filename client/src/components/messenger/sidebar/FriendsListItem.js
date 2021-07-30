@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { MessengerContext } from '../../../contexts/messenger.context';
 import getDefaultPicture from '../../../helpers/getDefaultPicture';
 
-function FriendsListItem({userData}) {
+function FriendsListItem({userData, selected}) {
+    const {setCurrentBody, setChatboxUser} = useContext(MessengerContext);
+
+    const handleClick = e => {
+        setCurrentBody('chatbox');
+        setChatboxUser(userData);
+    }
+
     return (
-        <li className="FriendsListItem">
+        <li className={`FriendsListItem ${selected ? 'selected' : ''}`} onClick={handleClick}>
             <div className="img-container">
                 <img 
                     className="user-avatar" 
