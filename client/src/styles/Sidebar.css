@@ -123,7 +123,7 @@
 	gap: 0px 0px;
 	grid-auto-flow: row;
 	justify-content: center;
-	align-items: flex-end;
+	align-items: flex-start;
 	text-align: center;
 	color: #ccc;
 	font-size: 1.3rem;
@@ -144,20 +144,21 @@
 .Utility-icons {
 	grid-area: 4 / 1 / 5 / 2;
 	margin-bottom: 1rem;
+	align-self: flex-end;
 }
 .Utility-icons button {
 	cursor: pointer;
 	padding: 10px;
-	transition: background-color 400ms ease;
-	transition: color 400ms ease-out;
 	background-color: transparent;
-	border: none;
 	color: #ccc;
+	transition: color 400ms ease-out;
+	border: none;
 	font-size: 1.3rem;
 }
 .Utility-icons button:hover {
 	color: #fff;
 	background-color: rgba(238, 238, 238, 0.1);
+	transition: background-color 500ms ease-in-out;
 	border-radius: 5px;
 }
 .settings-icon i {
@@ -165,6 +166,10 @@
 }
 .settings-icon:hover i {
 	animation: in 1s;
+}
+
+.selected {
+	background-color: #eee;
 }
 
 @keyframes in {

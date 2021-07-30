@@ -6,7 +6,7 @@ import '../../../styles/Sidebar.css';
 import findFriends from '../../../assets/images/friends-chat2.png';
 
 function Sidebar({userId}) {
-    const {friends} = useContext(MessengerContext);
+    const {friends, chatboxUser} = useContext(MessengerContext);
     return (
         <nav className="Sidebar">
             <SidebarPanel />
@@ -22,7 +22,10 @@ function Sidebar({userId}) {
                         <ul style={{marginTop: '1rem'}}>
                             {friends.map(f => (
                                 <React.Fragment key={f._id}>
-                                    <FriendsListItem userData={f}/>
+                                    <FriendsListItem 
+                                        userData={f}
+                                        selected={(chatboxUser && chatboxUser._id === f._id) ? true : false}
+                                    />
                                 </React.Fragment>
                             ))}
                         </ul>
