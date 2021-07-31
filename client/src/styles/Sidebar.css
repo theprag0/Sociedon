@@ -69,9 +69,16 @@
 	background: #efeff5;
 	color: #9e9ead;
 	border-radius: 50%;
-	padding: 7px;
+	padding: 8px;
+	font-size: 13px;
 	display: inline-block;
 	cursor: pointer;
+	transition: background-color 300ms ease-in-out;
+	transition: color 300ms ease-in-out;
+}
+.sidebar-icon-1:hover {
+	background-color: #f95959;
+	color: #fff;
 }
 
 .Sidebar-illustration {

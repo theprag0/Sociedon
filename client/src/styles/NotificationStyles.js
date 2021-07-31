@@ -21,7 +21,12 @@ const useStyles = makeStyles((theme) => ({
         color: '#d3d6e0',
         height: '100%',
         padding: '14px',
-        borderRadius: '50%'
+        borderRadius: '50%',
+        transition: 'background-color, color 300ms ease-in-out',
+        '&:hover': {
+            backgroundColor: '#4849a1',
+            color: '#fff'
+        }
     },
     notifNum: {
         position: 'absolute',

@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
 import { MessengerContext } from '../../contexts/messenger.context';
+import MessageInput from './MessageInput';
 import getDefaultPicture from '../../helpers/getDefaultPicture';
 import '../../styles/Chatbox.css';
 
 function Chatbox(props) {
     const {chatboxUser} = useContext(MessengerContext);
+    const friendImgSrc = chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : chatboxUser.image;
 
     return (
         <section className="Chatbox">
@@ -14,7 +16,7 @@ function Chatbox(props) {
                         <div className="img-container">
                             <img 
                                 className="user-avatar" 
-                                src={chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : chatboxUser.image}
+                                src={friendImgSrc}
                                 alt="user avatar"
                             />
                             <p className={chatboxUser.status === 'offline' ? 'offline' : 'online'}></p>
@@ -24,21 +26,30 @@ function Chatbox(props) {
                             <p>{chatboxUser.status === 'online' ? 'Active Now' : ''}</p>
                         </span>
                     </div>
-                    <div className="icons"></div>
+                    <div className="icons">
+                        <i class="fas fa-phone-alt"></i>
+                        <i class="fas fa-video"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
                 </div>
                 <ul className="message-list">
-                    <li className="they">Hello</li>
+                    <span>
+                        <img style={{borderRadius: '50%'}} src={friendImgSrc} alt="profile pic" className="img-container"/>
+                        <li className="they">
+                            Hello
+                        </li>
+                    </span>
                     <li className="me">hi</li>
-                    <li className="they">hey</li>
+                    <span>
+                        <img style={{borderRadius: '50%'}} src={friendImgSrc} alt="profile pic" className="img-container"/>
+                        <li className="they">
+                            Hey
+                        </li>
+                    </span>
                     <li className="me">sheesh</li>
                 </ul>
             </section>
-            <section className="message-input">
-                <input 
-                    type="text"
-                    placeholder="Type your message..."
-                />
-            </section>
+            <MessageInput />
         </section>
     )
 }
