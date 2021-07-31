@@ -5,7 +5,7 @@ const useStyles = makeStyles((theme) => ({
         width: '88%',
         margin: '0 1.4rem',
         marginRight: '0.5rem',
-        marginBottom: '1rem',
+        marginBottom: '0.4rem',
     },
     msgInputField: {
         border: '1px solid rgba(0, 0, 0, 0.25)',
