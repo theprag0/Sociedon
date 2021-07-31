@@ -42,7 +42,7 @@ function SidebarPanel(props) {
     };
 
     const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
+    const id = open ? 'settings-popover' : undefined;
 
     const changeMessengerBody = name => e => {
         if(name === 'home-icon') {
@@ -67,7 +67,7 @@ function SidebarPanel(props) {
                 />
             </div>
             <div className="Utility-icons">
-                <button onClick={handleClick} className="settings-icon">    
+                <button onClick={handleClick} className="settings-icon" aria-describedby={id}>    
                     <i className="fas fa-cog settings-icon"></i>
                 </button>
                 <Popover
@@ -88,7 +88,7 @@ function SidebarPanel(props) {
                 </Popover>
             </div>
         </div>
-    )
+    );
 }
 
 export default SidebarPanel;

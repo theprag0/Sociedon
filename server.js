@@ -111,14 +111,17 @@ if (cluster.isMaster) {
         console.log(`connected to worker: ${cluster.worker.id}`);
         socket.on('disconnect', async (reason) => {            
             // Check if user has more than one connections
+            console.log(`Disconnecting ${userId}...`);
             const foundUser = await User.findOne({_id: userId}).populate('friends', 'status socketId');
             if(foundUser && foundUser.socketId.length > 1) {
                 await User.findByIdAndUpdate({_id: userId}, {$pull: {socketId: socket.id}});
+                console.log(`Disconnected ${userId}`);
             } else {
                 await User.findByIdAndUpdate({_id: userId}, {
                     status: 'offline', 
                     $pull: {socketId: socket.id}
                 });
+                console.log(`Disconnected ${userId}`);
             }
 
             // Emit notification to all online friends

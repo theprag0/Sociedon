@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import io from 'socket.io-client';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
@@ -10,7 +10,7 @@ import { withSnackbar } from '../utility/SnackbarHOC';
 
 function Messenger({history, match, snackbarShowMessage}) {
     const {socket, setSocket} = useContext(SocketContext);
-    const {setFriends, currentBody, setCurrentBody} = useContext(MessengerContext);
+    const {setFriends, currentBody} = useContext(MessengerContext);
 
     // Replace redirect history
     useEffect(() => {
@@ -87,9 +87,8 @@ function Messenger({history, match, snackbarShowMessage}) {
             <div className="Messenger-body">
                 {messengerBody}
             </div>
-            <div className="infobar" style={{background: '#F4F4FA', width: '25%', height: '100vh', float: 'right'}}>
-
-            <Notifications userId={match.params.id}/>
+            <div className="infobar" style={{width: '20%', height: '100vh', float: 'right'}}>
+                <Notifications userId={match.params.id}/>
             </div>
         </section>
     );
