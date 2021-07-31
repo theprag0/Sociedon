@@ -13,7 +13,7 @@ function MessageInput(props) {
     }
 
     return (
-        <form className="message-input" onSubmit={handleSubmit}>
+        <form className="message-input" onSubmit={handleSubmit} style={{height: '10%'}}>
             <TextField
                 placeholder="Type your message..."
                 className={classes.msgInput}
@@ -32,7 +32,9 @@ function MessageInput(props) {
                     disableUnderline: true,
                 }}
             />
-            <button type="submit"><i class="fas fa-paper-plane"></i></button>
+            <button type="submit" style={{marginTop: '0.5rem'}}>
+                <i className="fas fa-paper-plane"></i>
+            </button>
         </form>
     );
 }

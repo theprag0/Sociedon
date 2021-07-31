@@ -3,13 +3,11 @@
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
-	/* align-items: center; */
-	justify-content: space-between;
 }
 
 .messages {
 	position: relative;
-	height: 95%;
+	height: 90%;
 	display: flex;
 }
 
@@ -30,6 +28,8 @@
 	justify-content: space-between;
 	font-family: 'Montserrat', sans-serif;
 	letter-spacing: 1px;
+	background-color: #fff;
+	z-index: 20;
 }
 .user-info {
 	display: flex;
@@ -104,11 +104,32 @@
 	display: flex;
 	align-self: flex-end;
 	flex-direction: column;
-	width: 100%;
+	width: 90%;
+	max-height: 85%;
 	padding: 0 2rem;
-	margin-bottom: 1rem;
+	margin-bottom: 0;
 	list-style: none;
+	overflow-y: scroll;
+	overflow-x: hidden;
 }
+
+.message-list::-webkit-scrollbar {
+	width: 5px;
+}
+.message-list::-webkit-scrollbar-track {
+	border-radius: 10px;
+}
+.message-list::-webkit-scrollbar-thumb {
+	background-color: transparent;
+	border-radius: 10px;
+}
+.message-list::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+.scroll-list::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
 .message-list li {
 	margin: 0.5rem 0;
 	color: #fff;
