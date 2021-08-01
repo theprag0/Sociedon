@@ -112,20 +112,25 @@ if (cluster.isMaster) {
         socket.on('disconnect', async (reason) => {            
             // Check if user has more than one connections
             console.log(`Disconnecting ${userId}...`);
-            const foundUser = await User.findOne({_id: userId}).populate('friends', 'status socketId');
+            const foundUser = await User.findById({_id: userId}, {
+                friends: 1, 
+                socketId: 1, 
+                status: 1
+            },{new: true}).populate('friends', 'status socketId');
+            let updateUser;
             if(foundUser && foundUser.socketId.length > 1) {
-                await User.findByIdAndUpdate({_id: userId}, {$pull: {socketId: socket.id}});
+                updateUser = await User.findByIdAndUpdate({_id: userId}, {$pull: {socketId: socket.id}}, {new: true});
                 console.log(`Disconnected ${userId}`);
             } else {
-                await User.findByIdAndUpdate({_id: userId}, {
+                updateUser = await User.findByIdAndUpdate({_id: userId}, {
                     status: 'offline', 
                     $pull: {socketId: socket.id}
-                });
+                }, {new: true});
                 console.log(`Disconnected ${userId}`);
             }
 
             // Emit notification to all online friends
-            if(foundUser && foundUser.friends.length > 0) {
+            if(foundUser && foundUser.friends.length > 0 && updateUser.status === 'offline') {
                 const onlineFriends = foundUser.friends.filter(friend => friend.status === 'online');
                 onlineFriends.forEach(friend => {
                     friend.socketId.forEach(socket => {

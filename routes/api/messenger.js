@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
+const DM = require('../../models/DM');
 const Arena = require('../../models/Arena');
 const auth = require('../../middleware/auth');
 
@@ -146,6 +147,19 @@ const returnRouter = io => {
             ));
             return res.json({requests: filterRequests});
         } 
+    });
+
+    // @route POST /messenger/messages
+    router.post('/messages', auth, async (req, res) => {
+        const {type} = req.body;
+        if(type === 'dm') {
+            const {userA, userB} = req.body;
+            
+            // Check if DM exists
+            const existingDm = await DM.findOne({users: {$size: 2, $all: [userA, userB]}});
+            if(!existingDm) return res.json({msg: 'No existing DM doc'});
+            return res.json({messages: existingDm.messages});
+        }
     });
 
     return router;

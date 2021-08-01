@@ -7,6 +7,7 @@ export function MessengerProvider(props) {
     // Current Messenger body(Eg: MessengerHome, Chatbox, Arena..)
     const [currentBody, setCurrentBody] = useState('home');
     const [chatboxUser, setChatboxUser] = useState({});
+    const [chatboxLoading, setChatboxLoading] = useState(false);
 
     const payload = {
         friends,
@@ -14,7 +15,9 @@ export function MessengerProvider(props) {
         currentBody,
         setCurrentBody,
         chatboxUser,
-        setChatboxUser
+        setChatboxUser,
+        chatboxLoading,
+        setChatboxLoading
     }
 
     return (
