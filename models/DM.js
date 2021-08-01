@@ -16,6 +16,10 @@ const dmSchema = new Schema(
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'User'
                 },
+                recipient: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
+                },
                 timestamp: {
                     type: Date,
                     default: Date.now

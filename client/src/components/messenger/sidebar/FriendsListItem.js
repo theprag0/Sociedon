@@ -1,13 +1,32 @@
 import React, { useContext } from 'react';
+import axios from 'axios';
+import { AuthenticationContext } from '../../../contexts/auth.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import getDefaultPicture from '../../../helpers/getDefaultPicture';
 
-function FriendsListItem({userData, selected}) {
-    const {setCurrentBody, setChatboxUser} = useContext(MessengerContext);
+function FriendsListItem({userData, selected, userId}) {
+    const {setCurrentBody, setChatboxUser, setChatboxLoading} = useContext(MessengerContext);
+    const {token} = useContext(AuthenticationContext);
 
     const handleClick = e => {
         setCurrentBody('chatbox');
-        setChatboxUser(userData);
+        setChatboxLoading(true);
+        // Load initial message data
+        const config = {
+            headers: {'x-auth-token': token}
+        };
+        axios.post('/messenger/messages', {
+            type: 'dm',
+            userA: userId,
+            userB: userData._id
+        }, config).then(res => {
+            if(res.data.messages && res.data.messages.length > 0) {
+                setChatboxUser({...userData, messages: res.data.messages});
+            } else {
+                setChatboxUser({...userData, messages: []});
+            }
+            setChatboxLoading(false);
+        }).catch(err => console.log(err));
     }
 
     return (

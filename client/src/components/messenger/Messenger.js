@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import io from 'socket.io-client';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
@@ -10,7 +10,7 @@ import { withSnackbar } from '../utility/SnackbarHOC';
 
 function Messenger({history, match, snackbarShowMessage}) {
     const {socket, setSocket} = useContext(SocketContext);
-    const {setFriends, currentBody} = useContext(MessengerContext);
+    const {setFriends, currentBody, setChatboxUser, chatboxUser} = useContext(MessengerContext);
 
     // Replace redirect history
     useEffect(() => {
@@ -25,6 +25,11 @@ function Messenger({history, match, snackbarShowMessage}) {
         // Socket connections
         setSocket(io(`http://localhost:8080?userId=${match.params.id}`));
     }, [match.params.id]);
+
+    const chatboxUserId = useRef(null);
+    useEffect(() => {
+        chatboxUserId.current = chatboxUser._id;
+    });
 
     // Initial client connection to server main namespace
     useEffect(() => {
@@ -44,6 +49,9 @@ function Messenger({history, match, snackbarShowMessage}) {
                         });
                         return updateOnlineFriend;
                     });
+                    if(chatboxUserId && chatboxUserId.current === data._id) {
+                        setChatboxUser(currChatboxUser => ({...currChatboxUser, status: 'online'}));
+                    }
                 });
                 socket.on('newOfflineFriend', data => {
                     console.log('new offline friend')
@@ -57,6 +65,9 @@ function Messenger({history, match, snackbarShowMessage}) {
                         });
                         return updateOfflineFriend;
                     });
+                    if(chatboxUserId && chatboxUserId.current === data._id) {
+                        setChatboxUser(currChatboxUser => ({...currChatboxUser, status: 'offline'}));
+                    }
                 });
             });
         }
@@ -78,7 +89,7 @@ function Messenger({history, match, snackbarShowMessage}) {
             </>
         )
     } else if(currentBody === 'chatbox') {
-        messengerBody = <Chatbox />
+        messengerBody = <Chatbox userId={match.params.id}/>
     }
 
     return (

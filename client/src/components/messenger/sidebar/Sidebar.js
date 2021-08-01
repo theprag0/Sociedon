@@ -23,6 +23,7 @@ function Sidebar({userId}) {
                             {friends.map(f => (
                                 <React.Fragment key={f._id}>
                                     <FriendsListItem 
+                                        userId={userId}
                                         userData={f}
                                         selected={(chatboxUser && chatboxUser._id === f._id) ? true : false}
                                     />

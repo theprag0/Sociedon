@@ -1,10 +1,14 @@
 import { useState } from 'react';
 
-const useInputState = initialVal => {
+const useInputState = (initialVal, validate = true) => {
     const [state, setState] = useState(initialVal);
     const handleChange = e => {
-        const re = /^[a-zA-Z0-9@.]*$/;
-        if(e.target.value === '' || re.test(e.target.value)) {
+        if(validate === true) {
+            const re = /^[a-zA-Z0-9@.]*$/;
+            if(e.target.value === '' || re.test(e.target.value)) {
+                setState(e.target.value);
+            }
+        } else {
             setState(e.target.value);
         }
     }
