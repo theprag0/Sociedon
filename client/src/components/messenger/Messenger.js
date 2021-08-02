@@ -98,7 +98,7 @@ function Messenger({history, match, snackbarShowMessage}) {
             <div className="Messenger-body">
                 {messengerBody}
             </div>
-            <div className="infobar" style={{width: '20%', height: '100vh', float: 'right'}}>
+            <div className="infobar" style={{width: '25%', height: '100vh', float: 'right'}}>
                 <Notifications userId={match.params.id}/>
             </div>
         </section>

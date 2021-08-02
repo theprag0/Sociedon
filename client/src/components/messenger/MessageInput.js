@@ -17,7 +17,8 @@ function MessageInput({addMessage, userId}) {
         if(message !== '') {
             addMessage({
                 from: userId, 
-                recipient: chatboxUser._id, 
+                recipient: chatboxUser._id,
+                timestamp: Date.now(), 
                 message
             });
             resetMessage();

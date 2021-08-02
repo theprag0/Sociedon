@@ -166,6 +166,22 @@
 	border-bottom-left-radius: 10px;
 }
 
+.message-status {
+	font-size: 10px;
+	color: rgba(0, 0, 0, 0.4);
+	font-family: 'Nunito', sans-serif;
+	letter-spacing: 1px;
+}
+
+.message-status i {
+	font-size: 9px;
+	color: rgba(0, 0, 0, 0.4);
+	margin-top: 0;
+	margin-bottom: 14px;
+	padding: 0;
+	padding-left: 2px;
+}
+
 .message-list span {
 	display: flex;
 }
@@ -179,6 +195,40 @@
 .message-list span img {
 	align-self: flex-end;
 	margin-right: 8px;
+}
+
+.chat-date {
+	/* overflow: hidden; */
+	text-align: center;
+	margin-top: 1rem;
+}
+.chat-date > span {
+	position: relative;
+	display: inline-block;
+	background-color: #f1f2f5;
+	color: #a0a8be;
+	font-size: 12px;
+	font-family: 'Nunito', sans-serif;
+	letter-spacing: 1px;
+	font-weight: 600;
+	padding: 5px 7px;
+	border-radius: 12px;
+}
+.chat-date > span:before,
+.chat-date > span:after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	border-bottom: 1px solid;
+	color: #c4c4d5;
+	width: 10rem; /* half of limiter*/
+	margin: 0 20px;
+}
+.chat-date > span:before {
+	right: 100%;
+}
+.chat-date > span:after {
+	left: 100%;
 }
 
 .loading-list {
