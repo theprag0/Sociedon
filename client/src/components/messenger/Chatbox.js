@@ -1,11 +1,12 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
+import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { MessengerContext } from '../../contexts/messenger.context';
 import { SocketContext } from '../../contexts/socket.context';
 import MessageInput from './MessageInput';
 import getDefaultPicture from '../../helpers/getDefaultPicture';
 import '../../styles/Chatbox.css';
-import chatbox1 from '../../assets/svg/chatbox1.svg';
+import chatbox2 from '../../assets/svg/chatbox2.svg';
 
 function Chatbox({userId}) {
     const {chatboxUser, setChatboxUser, chatboxLoading} = useContext(MessengerContext);
@@ -16,8 +17,12 @@ function Chatbox({userId}) {
 
     const msgEndRef = useRef(null);
     useEffect(() => {
-        msgEndRef.current.scrollIntoView({behavior: 'smooth'});
-    }, [chatboxUser.messages]);
+        let scrollTimer = setTimeout(() => {
+            msgEndRef.current.scrollIntoView({behavior: 'smooth'});
+        }, 50);
+
+        return () => clearTimeout(scrollTimer);
+    }, [chatboxUser]);
 
     // Show scrollbar only when scroll event occurs
     const handleScroll = e => {
@@ -29,17 +34,49 @@ function Chatbox({userId}) {
 
     // Add new message
     const addMessage = msg => {
-        socket.emit('private message', msg);
-        setChatboxUser(currChatboxUser => (
-            {...currChatboxUser, messages: [...currChatboxUser.messages, msg]}
-        ));
+        const newMsg = {...msg, status: 'sending', tempId: uuidv4()};
+        const msgDate = moment(newMsg.timestamp).format('DD-MM-YYYY');
+        
+        setChatboxUser(currChatboxUser => {
+            const messages = {...currChatboxUser.messages};
+            if(!messages[msgDate]) {
+                messages[msgDate] = [newMsg];
+            } else {
+                messages[msgDate].push(newMsg);
+            }
+            return {...currChatboxUser, messages};
+        });
+    
+        socket.emit('private message', newMsg, res => {
+            if(res) {
+                setChatboxUser(currChatboxUser => {
+                    const updateMessageStatus = currChatboxUser.messages[msgDate].map(message => {
+                        if(message.tempId && res.msg.tempId === message.tempId) {
+                            return {...message, status: res.msg.status}
+                        }
+                        return message;
+                    });
+                    const messages = {...currChatboxUser.messages};
+                    messages[msgDate] = updateMessageStatus;
+                    return {...currChatboxUser, messages};
+                });
+            }
+        });
     }
+
     useEffect(() => {
         if(socket !== null) {
             socket.on('private message', data => {
-                setChatboxUser(currChatboxUser => (
-                    {...currChatboxUser, messages: [...currChatboxUser.messages, data]}
-                ));
+                const msgDate = moment(data.timestamp).format('DD-MM-YYYY');
+                setChatboxUser(currChatboxUser => {
+                    const messages = {...currChatboxUser.messages};
+                    if(!messages[msgDate]) {
+                        messages[msgDate] = [data];
+                    } else {
+                        messages[msgDate].push(data);
+                    }
+                    return {...currChatboxUser, messages};
+                });
             });
         }
 
@@ -96,27 +133,43 @@ function Chatbox({userId}) {
                     !chatboxLoading ?
                     <ul className={`message-list ${isScrolling ? 'scroll-list' : ''}`} onScroll={handleScroll}>
                         {
-                            (chatboxUser.messages && chatboxUser.messages.length > 0) ?
-                            chatboxUser.messages.map(m => {
-                                if(m.from === userId) {
-                                    return (
-                                        <li key={m._id ? m._id : uuidv4()} className="me">
-                                            {m.message}
-                                        </li>
-                                    );
-                                } 
+                            (chatboxUser && Object.keys(chatboxUser.messages).length > 0) ?
+                            Object.keys(chatboxUser.messages).map(date => {
                                 return (
-                                    <span key={m._id ? m._id : uuidv4()}>
-                                        <img style={{borderRadius: '50%'}} src={friendImgSrc} alt="profile pic" className="img-container"/>
-                                        <li className="they">
-                                            {m.message}
-                                        </li>
-                                    </span>
+                                    <React.Fragment key={date}>
+                                        <h1 className="chat-date"><span>{date}</span></h1>
+                                        {chatboxUser.messages[date].map(m => {
+                                            if(m.from === userId) {
+                                                return (
+                                                    <React.Fragment key={m._id ? m._id : uuidv4()}>
+                                                        <li className={`me ${m.status === 'sending' ? 'sending' : ''}`} style={{marginBottom: 0}}>
+                                                            {m.message}
+                                                        </li>
+                                                        <p style={{alignSelf: 'flex-end'}} className="message-status">
+                                                            {moment(m.timestamp).format('hh:mm')}
+                                                            {
+                                                                m.status === 'sending' ?
+                                                                <i className="fas fa-clock"></i>
+                                                                : <i className="fas fa-check"></i>
+                                                            }
+                                                        </p>
+                                                    </React.Fragment>
+                                                );
+                                            } 
+                                            return (
+                                                <span key={m._id ? m._id : uuidv4()}>
+                                                    <img style={{borderRadius: '50%'}} src={friendImgSrc} alt="profile pic" className="img-container"/>
+                                                    <li className="they">
+                                                        {m.message}
+                                                    </li>
+                                                </span>
+                                            );
+                                        })}
+                                    </React.Fragment>
                                 )
-                            })
-                            : (
+                            }) : (
                                 <div className="start-chat">
-                                    <img src={chatbox1} alt="start chatting illustration"/>
+                                    <img src={chatbox2} alt="start chatting illustration"/>
                                     <p>Start chatting with {chatboxUser.username}</p>
                                     <hr className="hr-one"/>
                                     <li><em>Say 'Hi'</em> 👋...</li>
@@ -137,7 +190,7 @@ function Chatbox({userId}) {
                 userId={userId}
             />
         </section>
-    )
+    );
 }
 
 export default Chatbox;

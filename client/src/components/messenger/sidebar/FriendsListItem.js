@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import axios from 'axios';
 import { AuthenticationContext } from '../../../contexts/auth.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
+import groupMessagesByDate from '../../../helpers/groupMessagesByDate';
 import getDefaultPicture from '../../../helpers/getDefaultPicture';
 
 function FriendsListItem({userData, selected, userId}) {
@@ -21,9 +22,10 @@ function FriendsListItem({userData, selected, userId}) {
             userB: userData._id
         }, config).then(res => {
             if(res.data.messages && res.data.messages.length > 0) {
-                setChatboxUser({...userData, messages: res.data.messages});
+                const messages = groupMessagesByDate(res.data.messages);
+                setChatboxUser({...userData, messages});
             } else {
-                setChatboxUser({...userData, messages: []});
+                setChatboxUser({...userData, messages: {}});
             }
             setChatboxLoading(false);
         }).catch(err => console.log(err));
