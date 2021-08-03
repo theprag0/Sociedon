@@ -41,7 +41,10 @@ function FriendsListItem({userData, selected, userId}) {
                 />
                 <p className={userData.status === 'online' ? 'online' : 'offline'}></p>
             </div>
-            {userData.username}
+            <p className="friend-info">
+                {userData.username} <br />
+                <span className="recent-message">{userData.lastMessage ? userData.lastMessage.message : ''}</span>
+            </p>
         </li>
     );
 }

@@ -25,6 +25,15 @@ const dmSchema = new Schema(
                     default: Date.now
                 }
             }
+        ],
+        lastSeenMessage: [
+            {
+                by: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
+                },
+                messageId: String
+            }
         ]
     }
 );

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { MessengerContext } from '../../contexts/messenger.context';
 import { Picker } from 'emoji-mart';
 import TextField from '@material-ui/core/TextField';
@@ -13,7 +13,7 @@ import useStyles from '../../styles/MessageInputStyles';
 function MessageInput({addMessage, userId}) {
     const {chatboxUser} = useContext(MessengerContext);
     const [message, setMessage, resetMessage, setEmoji] = useInputState('', false);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
 
     const handleSubmit = e => {
