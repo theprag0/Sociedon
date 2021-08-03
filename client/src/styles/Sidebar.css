@@ -48,9 +48,9 @@
 
 .FriendsListItem {
 	display: flex;
-	align-items: center;
+	/* align-items: center; */
 	font-weight: 500;
-	text-align: center;
+	/* text-align: center; */
 	padding: 10px;
 	border-radius: 5px;
 	transition: background-color 500ms ease;
@@ -63,6 +63,19 @@
 }
 .FriendsListItem:hover {
 	background-color: #eee;
+}
+
+.friend-info {
+	font-family: 'Nunito', sans-serif;
+	font-weight: 600;
+	letter-spacing: 1px;
+}
+
+.recent-message {
+	font-weight: 500;
+	font-size: 13px;
+	letter-spacing: 0;
+	color: #a2a2ad;
 }
 /* Utility classes */
 .sidebar-icon-1 {

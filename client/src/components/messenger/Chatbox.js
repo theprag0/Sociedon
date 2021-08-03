@@ -16,7 +16,9 @@ function Chatbox({userId}) {
     const friendImgSrc = chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : chatboxUser.image;
 
     const msgEndRef = useRef(null);
+    const chatboxUserId = useRef(null);
     useEffect(() => {
+        chatboxUserId.current = chatboxUser._id;
         let scrollTimer = setTimeout(() => {
             msgEndRef.current.scrollIntoView({behavior: 'smooth'});
         }, 50);
@@ -68,20 +70,51 @@ function Chatbox({userId}) {
         if(socket !== null) {
             socket.on('private message', data => {
                 const msgDate = moment(data.timestamp).format('DD-MM-YYYY');
-                setChatboxUser(currChatboxUser => {
-                    const messages = {...currChatboxUser.messages};
-                    if(!messages[msgDate]) {
-                        messages[msgDate] = [data];
-                    } else {
-                        messages[msgDate].push(data);
-                    }
-                    return {...currChatboxUser, messages};
-                });
+                if(data.from === chatboxUserId.current) {
+                    setChatboxUser(currChatboxUser => {
+                        const messages = {...currChatboxUser.messages};
+                        if(!messages[msgDate]) {
+                            messages[msgDate] = [data];
+                        } else {
+                            messages[msgDate].push(data);
+                        }
+                        return {...currChatboxUser, messages};
+                    });
+                }
             });
         }
 
         return () => socket.off('private message');
-    }, []);
+    }, [socket]);
+
+    //Determine the last seen message
+    const lastSeenMessageId = useRef(null);
+    useEffect(() => {
+        if(chatboxUser.messages && Object.keys(chatboxUser.messages).length > 0) {
+            const messageDates = Object.keys(chatboxUser.messages);
+            const recentMessageArray = chatboxUser.messages[messageDates[messageDates.length - 1]]
+            for (let i = recentMessageArray.length - 1; i >= 0; i--) {
+                let currMessage = recentMessageArray[i];
+                if(currMessage.from === chatboxUser._id) {
+                    lastSeenMessageId.current = currMessage._id;
+                    break;
+                }
+            }
+            console.log(`mount: ${lastSeenMessageId.current}`)
+        }
+
+        // emit last seen message to server on unmount
+        return () => {
+            if(socket !== null) {
+                socket.emit('last-seen message', {
+                    messageId: lastSeenMessageId.current,
+                    by: userId,
+                    from: chatboxUserId.current
+                });
+                console.log(`unmount: ${lastSeenMessageId.current}`)
+            }
+        }
+    }, [chatboxUser.messages])
 
     // Show skeleton layout when chatbox is loading
     const loadingList = Array.from({length: 10}, (_, i) => {

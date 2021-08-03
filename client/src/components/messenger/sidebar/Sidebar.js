@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
+import { SocketContext } from '../../../contexts/socket.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import SidebarPanel from './SidebarPanel';
 import FriendsListItem from './FriendsListItem';
@@ -6,7 +7,31 @@ import '../../../styles/Sidebar.css';
 import findFriends from '../../../assets/images/friends-chat2.png';
 
 function Sidebar({userId}) {
-    const {friends, chatboxUser} = useContext(MessengerContext);
+    const {friends, chatboxUser, setFriends} = useContext(MessengerContext);
+    const {socket} = useContext(SocketContext);
+
+    // Listen and load recent message
+    useEffect(() => {
+        if(socket !== null) {
+            socket.on('recent message', data => {
+                setFriends(currFriends => {
+                    const updateFriends = currFriends.map(friend => {
+                        if(friend._id === data.friendId) {
+                            return {...friend, lastMessage: data.lastMessage};
+                        }
+                        return friend;
+                    });
+                    return updateFriends;
+                });
+            }) 
+        }
+        return () => {
+            if(socket !== null) {
+                socket.off('recent message')
+            }
+        };
+    }, [socket]);
+
     return (
         <nav className="Sidebar">
             <SidebarPanel />

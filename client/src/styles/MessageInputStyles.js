@@ -29,6 +29,24 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             color: '#4849a1'
         }
+    },
+    emojiPicker: {
+        "&::-webkit-scrollbar": {
+            width: '5px'
+        },
+        "&::-webkit-scrollbar-track": {
+            borderRadius: '10px'
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "transparent",
+	        borderRadius: "10px",
+        },
+        "&.message-list::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.3)"
+        },
+        // "&::-webkit-scrollbar-thumb": {
+        //     backgroundColor: "rgba(0, 0, 0, 0.1)"
+        // }
     }
 }));
 
