@@ -69,13 +69,41 @@
 	font-family: 'Nunito', sans-serif;
 	font-weight: 600;
 	letter-spacing: 1px;
+	width: 70%;
+}
+.friend-info span:first-child {
+	display: flex;
+	align-items: center;
+}
+.friend-info span:first-child p {
+	font-weight: 500;
+	font-size: 10px;
+	letter-spacing: 0;
+	color: #a2a2ad;
+	margin-left: 5px;
 }
 
 .recent-message {
+	width: 100%;
 	font-weight: 500;
 	font-size: 13px;
 	letter-spacing: 0;
 	color: #a2a2ad;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.recent-message p:first-child {
+	word-wrap: break-word;
+}
+.recent-message p:last-child {
+	color: #fff;
+	background-color: #f95959;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 2px 6px;
+	text-align: center;
+	border-radius: 50%;
 }
 /* Utility classes */
 .sidebar-icon-1 {

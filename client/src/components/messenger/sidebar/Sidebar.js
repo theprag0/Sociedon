@@ -1,4 +1,6 @@
 import React, { useContext, useEffect } from 'react';
+import axios from 'axios';
+import { AuthenticationContext } from '../../../contexts/auth.context';
 import { SocketContext } from '../../../contexts/socket.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import SidebarPanel from './SidebarPanel';
@@ -7,30 +9,46 @@ import '../../../styles/Sidebar.css';
 import findFriends from '../../../assets/images/friends-chat2.png';
 
 function Sidebar({userId}) {
-    const {friends, chatboxUser, setFriends} = useContext(MessengerContext);
+    const {token} = useContext(AuthenticationContext);
     const {socket} = useContext(SocketContext);
+    const {chatboxUser, conversations, setConversations, currentBody} = useContext(MessengerContext);
 
-    // Listen and load recent message
+    // Load user's conversations/direct messages
     useEffect(() => {
-        if(socket !== null) {
-            socket.on('recent message', data => {
-                setFriends(currFriends => {
-                    const updateFriends = currFriends.map(friend => {
-                        if(friend._id === data.friendId) {
-                            return {...friend, lastMessage: data.lastMessage};
-                        }
-                        return friend;
-                    });
-                    return updateFriends;
-                });
-            }) 
-        }
-        return () => {
-            if(socket !== null) {
-                socket.off('recent message')
-            }
+        const config = {
+            headers: {'x-auth-token': token}
         };
-    }, [socket]);
+        axios.get(`/messenger/retrieve/conversations/${userId}`, config)
+            .then(res => {
+                if(res.data && res.data.conversations) {
+                    setConversations(res.data.conversations);
+                }
+            })
+            .catch(err => console.log(err));
+    }, [token, userId]);
+
+    // Update unread messages if chatbox is not open
+    useEffect(() => {
+        if(socket !== null && (!chatboxUser || Object.keys(chatboxUser).length === 0)) {
+            socket.on('private message', data => {
+                setConversations(currConvo => {
+                    const updateConversations = currConvo.map(c => {
+                        if(data.from === c._id) {
+                            const unreadMessages = c.unreadMessages ? c.unreadMessages + 1 : 1;
+                            return {...c, lastMessageFromFriend: data, unreadMessages};
+                        } else {
+                            return c;
+                        }
+                    });
+                    return updateConversations;
+                });
+            });
+        }
+
+        return () => {
+            if(socket !== null) socket.off('private message');
+        }
+    }, [socket, currentBody, chatboxUser]);
 
     return (
         <nav className="Sidebar">
@@ -42,15 +60,15 @@ function Sidebar({userId}) {
                 </span>
                 <div className="friends-list">
                     {
-                        (friends && friends.length > 0) 
+                        (conversations && conversations.length > 0) 
                         ?
                         <ul style={{marginTop: '1rem'}}>
-                            {friends.map(f => (
-                                <React.Fragment key={f._id}>
+                            {conversations.map(c => (
+                                <React.Fragment key={c._id}>
                                     <FriendsListItem 
                                         userId={userId}
-                                        userData={f}
-                                        selected={(chatboxUser && chatboxUser._id === f._id) ? true : false}
+                                        userData={c}
+                                        selected={(chatboxUser && chatboxUser._id === c._id) ? true : false}
                                     />
                                 </React.Fragment>
                             ))}

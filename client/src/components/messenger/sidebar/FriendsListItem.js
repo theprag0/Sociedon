@@ -1,12 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import { AuthenticationContext } from '../../../contexts/auth.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import groupMessagesByDate from '../../../helpers/groupMessagesByDate';
 import getDefaultPicture from '../../../helpers/getDefaultPicture';
 
 function FriendsListItem({userData, selected, userId}) {
-    const {setCurrentBody, setChatboxUser, setChatboxLoading} = useContext(MessengerContext);
+    const {setCurrentBody, setChatboxUser, setChatboxLoading, conversations} = useContext(MessengerContext);
     const {token} = useContext(AuthenticationContext);
 
     const handleClick = e => {
@@ -30,6 +31,13 @@ function FriendsListItem({userData, selected, userId}) {
             setChatboxLoading(false);
         }).catch(err => console.log(err));
     }
+    
+    const lastMessageTimestamp = useRef(null);
+    useEffect(() => {
+        lastMessageTimestamp.current = (
+            userData.lastMessageFromFriend ? moment(userData.lastMessageFromFriend.timestamp).fromNow() : ''
+        );
+    }, [conversations]);
 
     return (
         <li className={`FriendsListItem ${selected ? 'selected' : ''}`} onClick={handleClick}>
@@ -41,10 +49,22 @@ function FriendsListItem({userData, selected, userId}) {
                 />
                 <p className={userData.status === 'online' ? 'online' : 'offline'}></p>
             </div>
-            <p className="friend-info">
-                {userData.username} <br />
-                <span className="recent-message">{userData.lastMessage ? userData.lastMessage.message : ''}</span>
-            </p>
+            <div className="friend-info">
+                <span>
+                    {userData.username}
+                    <p>
+                        {
+                            lastMessageTimestamp.current === 'a few seconds ago' 
+                            ? 'now' 
+                            : lastMessageTimestamp.current
+                        }
+                    </p>
+                </span>
+                <span className="recent-message" style={{display: userData.unreadMessages ? 'flex' : 'none'}}>
+                    <p>{userData.lastMessageFromFriend ? userData.lastMessageFromFriend.message : ''}</p>
+                    <p>{userData.unreadMessages ? userData.unreadMessages : ''}</p>
+                </span>
+            </div>
         </li>
     );
 }

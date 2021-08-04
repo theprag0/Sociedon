@@ -3,16 +3,8 @@ const DM = require('../models/DM');
 
 async function socketMain(io, socket, userId) {
     const currUser = await User.findById({_id: userId}, {friends: 1}).populate('friends', 'username status defaultImage');
+    // Send user's friends on connection
     socket.emit('friendsList', {friends: currUser.friends});
-    for(let friend of currUser.friends) {
-        const foundDm = await DM.findOne({users: {$size: 2, $all: [userId, friend._id]}});
-        if(foundDm) {
-            const lastMessage = foundDm.messages[foundDm.messages.length - 1];
-            socket.emit('recent message', {lastMessage, friendId: friend._id});
-        } else {
-            socket.emit('recent message', {lastMessage: '', friendId: friend._id});
-        }
-    }
 
     // Listen for new private message
     socket.on('private message', async (data, callback) => {
@@ -53,7 +45,6 @@ async function socketMain(io, socket, userId) {
         if(foundDm) {
             foundDm.lastSeenMessage.forEach(async m => {
                 if(m.by.toString() === data.by) {
-                    console.log('here');
                     await DM.findOneAndUpdate({users: {$size: 2, $all: [data.by, data.from]}}, {
                         $pull: {lastSeenMessage: {
                             by: data.by
@@ -62,7 +53,6 @@ async function socketMain(io, socket, userId) {
                     return;
                 }
             });
-            console.log('here1');
             await DM.findOneAndUpdate({users: {$size: 2, $all: [data.by, data.from]}}, {
                 $push: {lastSeenMessage: {
                     by: data.by,

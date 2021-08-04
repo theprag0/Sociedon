@@ -71,7 +71,6 @@ function Notifications({userId, snackbarShowMessage}) {
 
     // Handle friend request actions
     const handleRequest = (e, currUserId, fromId) => {
-        console.log(e.target.title)
         const config = {
             headers: {
                 'x-auth-token': token
