@@ -50,7 +50,6 @@ function Register(props) {
 
         axios.post('/api/user/register', body)
             .then(res => {
-                console.log(res)
                 setIsAuthenticated(true);
                 setUserLoading(false);
                 setUserData(res.data.user);

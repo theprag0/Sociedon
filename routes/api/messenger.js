@@ -4,6 +4,7 @@ const User = require('../../models/User');
 const DM = require('../../models/DM');
 const Arena = require('../../models/Arena');
 const auth = require('../../middleware/auth');
+const getUserConversations = require('../../helpers/getUserConversations');
 
 const returnRouter = io => {
     // @route GET /messenger/search
@@ -89,13 +90,6 @@ const returnRouter = io => {
                         });
                     })
                 }
-                // for(const [key, value] of req.io.sockets.sockets.entries()){
-                //     if(value.handshake.query.userId.toString() === recipient.toString()) {
-                //         if(value.connected) {
-                //             req.io.to(key).emit('newFriendRequest', {fromUsername: fromUser.username, fromId: from});
-                //         }
-                //     }
-                // }
         
                 return res.json({
                     msg: 'Request sent successfully!', 
@@ -112,9 +106,6 @@ const returnRouter = io => {
                             await User.findByIdAndUpdate({_id: currUserId}, {$pull: {
                                 friendRequests: {from: fromId}
                             }});
-                            // await User.findByIdAndUpdate({_id: fromId}, {$pull: {
-                            //     friendRequests: {from: currUserId}
-                            // }});
                         }
                     }
                     if(!addFriendAInB) return res.json({msg: 'Failed to accept friend request, Please try again later.'});
@@ -146,10 +137,25 @@ const returnRouter = io => {
                 {fromId: p.from._id, fromUsername: p.from.username, status: p.status}
             ));
             return res.json({requests: filterRequests});
-        } 
+        } else if(req.params.type === 'conversations') {
+            // Send user's conversations/direct messages on connection
+            const userId = req.params.userId;
+            const userDms = await DM.find({users: {$in: userId}}).populate('users', 'username status defaultImage');
+            
+            if(userDms && userDms.length > 0) {
+                const userConversations = getUserConversations(userDms, userId);
+                if(userConversations && userConversations.length > 0) {
+                    return res.json({conversations: userConversations});
+                }
+            } else {
+                return res.json({msg: 'No conversations yet!'});
+            }
+        }
     });
 
     // @route POST /messenger/messages
+    // @desc Send all messages in DM
+    // @access Private
     router.post('/messages', auth, async (req, res) => {
         const {type} = req.body;
         if(type === 'dm') {

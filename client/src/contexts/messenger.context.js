@@ -4,6 +4,7 @@ export const MessengerContext = createContext();
 
 export function MessengerProvider(props) {
     const [friends, setFriends] = useState([]);
+    const [conversations, setConversations] = useState([]);
     // Current Messenger body(Eg: MessengerHome, Chatbox, Arena..)
     const [currentBody, setCurrentBody] = useState('home');
     const [chatboxUser, setChatboxUser] = useState({});
@@ -12,6 +13,8 @@ export function MessengerProvider(props) {
     const payload = {
         friends,
         setFriends,
+        conversations,
+        setConversations,
         currentBody,
         setCurrentBody,
         chatboxUser,

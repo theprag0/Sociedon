@@ -9,7 +9,7 @@ import '../../styles/Chatbox.css';
 import chatbox2 from '../../assets/svg/chatbox2.svg';
 
 function Chatbox({userId}) {
-    const {chatboxUser, setChatboxUser, chatboxLoading} = useContext(MessengerContext);
+    const {chatboxUser, setChatboxUser, chatboxLoading, conversations, setConversations} = useContext(MessengerContext);
     const {socket} = useContext(SocketContext);
     const [isScrolling, setIsScrolling] = useState(false);
 
@@ -80,7 +80,7 @@ function Chatbox({userId}) {
                         }
                         return {...currChatboxUser, messages};
                     });
-                }
+                } 
             });
         }
 
@@ -97,21 +97,35 @@ function Chatbox({userId}) {
                 let currMessage = recentMessageArray[i];
                 if(currMessage.from === chatboxUser._id) {
                     lastSeenMessageId.current = currMessage._id;
+                    socket.emit('last-seen message', {
+                        messageId: lastSeenMessageId.current,
+                        by: userId,
+                        from: chatboxUserId.current
+                    });
+                    if(conversations && conversations.length > 0) {
+                        setConversations(currConvo => {
+                            const updateConversations = currConvo.map(c => {
+                                if(c._id === chatboxUserId.current && c.lastMessageFromFriend && c.lastMessageFromFriend._id === lastSeenMessageId.current) {
+                                    return {...c, lastSeenMessageId: null, unreadMessages: null};
+                                }
+                                return c;
+                            });
+                            return updateConversations;
+                        });
+                    }
                     break;
                 }
             }
-            console.log(`mount: ${lastSeenMessageId.current}`)
         }
 
         // emit last seen message to server on unmount
         return () => {
-            if(socket !== null) {
+            if(socket !== null && lastSeenMessageId.current !== null) {
                 socket.emit('last-seen message', {
                     messageId: lastSeenMessageId.current,
                     by: userId,
                     from: chatboxUserId.current
                 });
-                console.log(`unmount: ${lastSeenMessageId.current}`)
             }
         }
     }, [chatboxUser.messages])
