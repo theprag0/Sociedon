@@ -17,9 +17,14 @@
 .Search input {
 	width: 10rem;
 	height: 1rem;
-	border: 1px solid #000;
+	border: none;
+	/* border: 1px solid #000; */
 	border-radius: 5px;
 	padding: 10px;
+}
+.Search input:focus {
+	outline: none;
+	border: 2px solid #f95959;
 }
 
 .Search ul {

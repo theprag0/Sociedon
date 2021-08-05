@@ -1,0 +1,77 @@
+.Infobar {
+	height: 85%;
+	width: 95%;
+	background-color: #f4f4fa;
+	border-radius: 10px;
+	position: relative;
+}
+
+.Infobar-profile-pic {
+	position: absolute;
+	top: -2rem;
+	right: 0;
+	left: 0;
+	width: 4.5rem;
+	height: 4.5rem;
+	margin: 0 auto;
+	border-radius: 50%;
+	border: 3px solid #f4f4fa;
+}
+
+/* Find Friends Search bar */
+.Infobar-search {
+	padding: 1rem;
+	padding-top: 4rem;
+}
+
+.Infobar-search h1 {
+	font-family: 'Nunito', sans-serif;
+	font-size: 12px;
+	font-weight: 600;
+	margin-left: 11px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+}
+
+.Infobar-hr {
+	border: 0;
+	height: 0;
+	width: 85%;
+	margin: 0 auto;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Friends List */
+.Infobar-friends {
+	padding: 1rem;
+}
+
+.Infobar-friends h1 {
+	margin-left: 11px;
+	font-family: 'Nunito', sans-serif;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+}
+
+.Infobar-friends-list {
+	max-height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.Infobar-friends-list::-webkit-scrollbar {
+	width: 4px;
+}
+.Infobar-friends-list::-webkit-scrollbar-track {
+	border-radius: 10px;
+}
+.Infobar-friends-list::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+}
+.Infobar-friends-list::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(0, 0, 0, 0.3);
+}

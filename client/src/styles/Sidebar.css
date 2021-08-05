@@ -105,6 +105,10 @@
 	text-align: center;
 	border-radius: 50%;
 }
+.exceeded-unseen {
+	font-size: 9px !important;
+	padding: 3px 3px !important;
+}
 /* Utility classes */
 .sidebar-icon-1 {
 	background: #efeff5;

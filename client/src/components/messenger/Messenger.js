@@ -6,7 +6,6 @@ import Sidebar from './sidebar/Sidebar';
 import Chatbox from './Chatbox';
 import Infobar from './infobar/Infobar';
 import Notifications from './Notifications';
-import Search from './Search';
 import { withSnackbar } from '../utility/SnackbarHOC';
 
 function Messenger({history, match, snackbarShowMessage}) {
@@ -104,7 +103,6 @@ function Messenger({history, match, snackbarShowMessage}) {
         messengerBody = (
             <>
                 <h1>Messenger</h1>
-                <Search type="friends"/>
             </>
         )
     } else if(currentBody === 'chatbox') {
@@ -122,7 +120,9 @@ function Messenger({history, match, snackbarShowMessage}) {
                 {messengerBody}
             </div>
             <div className="infobar" style={{width: '25%', height: '100vh', float: 'right'}}>
-                <Notifications userId={match.params.id}/>
+                <div style={{height: '15%'}}>
+                    <Notifications userId={match.params.id}/>
+                </div>
                 <Infobar userId={match.params.id}/>
             </div>
         </section>

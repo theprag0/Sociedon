@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import { SocketContext } from '../../contexts/socket.context';
+import { MessengerContext } from '../../contexts/messenger.context';
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
@@ -14,8 +15,9 @@ import useStyles from '../../styles/NotificationStyles';
 import { withSnackbar } from '../utility/SnackbarHOC';
 
 function Notifications({userId, snackbarShowMessage}) {
-    const {socket} = useContext(SocketContext);
     const {token} = useContext(AuthenticationContext);
+    const {socket} = useContext(SocketContext);
+    const {setFriends} = useContext(MessengerContext);
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [friendRequests, setFriendRequests] = useState([]);
@@ -85,6 +87,9 @@ function Notifications({userId, snackbarShowMessage}) {
         .then(res => {
             const filterFriendRequests = friendRequests.filter(f => f.fromId !== fromId);
             setFriendRequests(filterFriendRequests);
+            if(e.target.title === 'accept') {
+                setFriends(currFriends => [...currFriends, res.data.friendData]);
+            }
             snackbarShowMessage(
                 e.target.title === 'accept' ? `${res.data.msg} 😎` : `${res.data.msg} 🤡`, 
                 'success'

@@ -107,9 +107,28 @@ const returnRouter = io => {
                                 friendRequests: {from: fromId}
                             }});
                         }
+                        // Check if userA is online and emit notification
+                        if(addFriendBInA.status === 'online' && addFriendBInA.socketId.length > 0) {
+                            addFriendBInA.socketId.forEach(socket => {
+                                io.to(socket).emit('friend-request accepted', {friendData: {
+                                    _id: addFriendAInB._id,
+                                    username: addFriendAInB.username,
+                                    status: addFriendAInB.status,
+                                    defaultImage: addFriendAInB.defaultImage
+                                }});
+                            });
+                        }
+                        return res.json({
+                            msg: 'Friend added!', 
+                            friendData: {
+                                _id: addFriendBInA._id,
+                                username: addFriendBInA.username,
+                                status: addFriendBInA.status,
+                                defaultImage: addFriendBInA.defaultImage
+                            }
+                        });
                     }
                     if(!addFriendAInB) return res.json({msg: 'Failed to accept friend request, Please try again later.'});
-                    return res.json({msg: 'Friend added!'});
                 } else if(req.body.action === 'decline') {
                     await User.findByIdAndUpdate({_id: currUserId}, {$pull: {
                         friendRequests: {from: fromId}
