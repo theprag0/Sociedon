@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme) => ({
       top: 0,
       right: '5rem',
       margin: '1rem',
+      marginTop: '0.5rem'
     },
     paper: {
       marginRight: theme.spacing(2),

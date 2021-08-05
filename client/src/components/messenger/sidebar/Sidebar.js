@@ -83,7 +83,7 @@ function Sidebar({userId}) {
                             <div className="find-friends">
                                 <img className="Sidebar-illustration" src={findFriends} alt="find friends illustration"/>
                                 <p style={{textAlign: 'center'}}>
-                                    Find friends and start socializing 😃
+                                    No Conversations yet! Start hanging out with your friends 😃
                                 </p>
                             </div>
                         )
