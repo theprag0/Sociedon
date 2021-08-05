@@ -150,7 +150,7 @@ const returnRouter = io => {
             } else {
                 return res.json({msg: 'No conversations yet!'});
             }
-        }
+        } 
     });
 
     // @route POST /messenger/messages
@@ -166,6 +166,22 @@ const returnRouter = io => {
             if(!existingDm) return res.json({msg: 'No existing DM doc'});
             return res.json({messages: existingDm.messages});
         }
+    });
+
+    // @route POST /messenger/profile
+    // @desc send friend information/profile
+    // @access Private
+    router.post('/profile', auth, async (req, res) => {
+        const {friendId} = req.body;
+        const foundFriend = await User.findOne({_id: friendId}, {
+            username: 1,
+            defaultImage: 1,
+            status: 1
+        });
+        if(foundFriend) {
+            return res.json({...foundFriend.toObject()});
+        }
+        return res.json({msg: 'User not found!'});
     });
 
     return router;

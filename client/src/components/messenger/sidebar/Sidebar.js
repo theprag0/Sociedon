@@ -11,7 +11,7 @@ import findFriends from '../../../assets/images/friends-chat2.png';
 function Sidebar({userId}) {
     const {token} = useContext(AuthenticationContext);
     const {socket} = useContext(SocketContext);
-    const {chatboxUser, conversations, setConversations, currentBody} = useContext(MessengerContext);
+    const {chatboxUser, conversations, setConversations, friends} = useContext(MessengerContext);
 
     // Load user's conversations/direct messages
     useEffect(() => {
@@ -29,26 +29,31 @@ function Sidebar({userId}) {
 
     // Update unread messages if chatbox is not open
     useEffect(() => {
-        if(socket !== null && (!chatboxUser || Object.keys(chatboxUser).length === 0)) {
-            socket.on('private message', data => {
-                setConversations(currConvo => {
-                    const updateConversations = currConvo.map(c => {
-                        if(data.from === c._id) {
-                            const unreadMessages = c.unreadMessages ? c.unreadMessages + 1 : 1;
-                            return {...c, lastMessageFromFriend: data, unreadMessages};
-                        } else {
-                            return c;
-                        }
-                    });
-                    return updateConversations;
+        setTimeout(() => {
+            if(socket !== null && (!chatboxUser || Object.keys(chatboxUser).length === 0) && friends && friends.length > 0) {
+                socket.on('private message', data => {
+                    // Check if conversation with user exists
+                    setConversations(currConvo => {
+                        // Check if conversation exists
+                        const foundConversation = currConvo.filter(c => c._id === data.from);
+                        if(foundConversation && foundConversation.length > 0) {
+                            const updateConversations = currConvo.map(c => {
+                                if(data.from === c._id) {
+                                    const unreadMessages = c.unreadMessages ? c.unreadMessages + 1 : 1;
+                                    return {...c, lastMessageFromFriend: data, unreadMessages};
+                                } else {
+                                    return c;
+                                }
+                            });
+                            return updateConversations;
+                        } 
+                        const friendData = friends.filter(f => f._id === data.from)[0];
+                        return [...currConvo, {...friendData, lastMessageFromFriend: data, unreadMessages: 1}];
+                    })
                 });
-            });
-        }
-
-        return () => {
-            if(socket !== null) socket.off('private message');
-        }
-    }, [socket, currentBody, chatboxUser]);
+            } 
+        }, 1000);
+    }, [socket, chatboxUser, friends]);
 
     return (
         <nav className="Sidebar">

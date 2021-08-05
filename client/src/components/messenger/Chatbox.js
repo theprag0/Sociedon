@@ -9,7 +9,7 @@ import '../../styles/Chatbox.css';
 import chatbox2 from '../../assets/svg/chatbox2.svg';
 
 function Chatbox({userId}) {
-    const {chatboxUser, setChatboxUser, chatboxLoading, conversations, setConversations} = useContext(MessengerContext);
+    const {chatboxUser, setChatboxUser, chatboxLoading, conversations, setConversations, currentBody} = useContext(MessengerContext);
     const {socket} = useContext(SocketContext);
     const [isScrolling, setIsScrolling] = useState(false);
 
@@ -40,6 +40,19 @@ function Chatbox({userId}) {
         const msgDate = moment(newMsg.timestamp).format('DD-MM-YYYY');
         
         setChatboxUser(currChatboxUser => {
+            // Check if this is the first message in current DM
+            if(currChatboxUser.messages && Object.keys(currChatboxUser.messages).length === 0) {
+                console.log('first message');
+                setConversations(currConvo => {
+                    const newConversation = {
+                        _id: currChatboxUser._id,
+                        defaultImage: currChatboxUser.defaultImage,
+                        status: currChatboxUser.status,
+                        username: currChatboxUser.username
+                    }
+                    return [...currConvo, newConversation];
+                });
+            }
             const messages = {...currChatboxUser.messages};
             if(!messages[msgDate]) {
                 messages[msgDate] = [newMsg];
@@ -106,7 +119,7 @@ function Chatbox({userId}) {
                         setConversations(currConvo => {
                             const updateConversations = currConvo.map(c => {
                                 if(c._id === chatboxUserId.current && c.lastMessageFromFriend && c.lastMessageFromFriend._id === lastSeenMessageId.current) {
-                                    return {...c, lastSeenMessageId: null, unreadMessages: null};
+                                    return {...c, lastMessageFromFriend: null, unreadMessages: null};
                                 }
                                 return c;
                             });
