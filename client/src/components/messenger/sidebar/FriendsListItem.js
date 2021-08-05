@@ -33,11 +33,9 @@ function FriendsListItem({userData, selected, userId}) {
     }
     
     const lastMessageTimestamp = useRef(null);
-    useEffect(() => {
-        lastMessageTimestamp.current = (
-            userData.lastMessageFromFriend ? moment(userData.lastMessageFromFriend.timestamp).fromNow() : ''
-        );
-    }, [conversations]);
+    lastMessageTimestamp.current = (
+        userData.lastMessageFromFriend ? moment(userData.lastMessageFromFriend.timestamp).fromNow() : ''
+    );
 
     return (
         <li className={`FriendsListItem ${selected ? 'selected' : ''}`} onClick={handleClick}>
