@@ -5,15 +5,16 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
       position: 'absolute',
       top: 0,
-      right: '5rem',
+      right: '6rem',
       margin: '1rem',
-      marginTop: '0.5rem'
+      marginTop: '0.5rem',
     },
     paper: {
       marginRight: theme.spacing(2),
     },
     popper: {
-        width: 'fit-content'
+        width: 'fit-content',
+        zIndex: 20
     },
     notif: {
         position: 'relative',

@@ -37,13 +37,15 @@
 }
 
 .find-friends {
-	margin-top: 7rem;
+	margin-top: 5rem;
 	text-align: center;
 }
 
 .find-friends p {
-	letter-spacing: 0;
-	font-weight: 500;
+	letter-spacing: 1px;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 13px;
 }
 
 .FriendsListItem {

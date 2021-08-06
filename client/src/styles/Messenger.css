@@ -82,3 +82,134 @@
 	height: 2rem;
 	margin: 0 auto;
 }
+
+/* Messenger Home */
+.MessengerHome {
+	height: 85%;
+}
+.MessengerHome ul {
+	width: 95%;
+	height: 100%;
+	margin: 0 auto;
+	padding-top: 1rem;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.MessengerHome ul li {
+	font-family: 'Nunito', sans-serif;
+	font-weight: 600;
+	letter-spacing: 1px;
+}
+
+.MessengerHome ul::-webkit-scrollbar {
+	width: 6px;
+}
+.MessengerHome ul::-webkit-scrollbar-track {
+	border-radius: 10px;
+}
+.MessengerHome ul::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+}
+.MessengerHome ul::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.MessengerHome-nav {
+	width: 100%;
+	padding: 1rem 0;
+}
+
+.MessengerHome-nav button {
+	position: relative;
+	background: none;
+	border: none;
+	margin: 0 2rem;
+	margin-right: 1.5rem;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 15px;
+	cursor: pointer;
+}
+
+.MessengerHome-nav button:after {
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	right: 0;
+	content: '';
+}
+.MessengerHome-nav button:hover:after {
+	animation: border-grow 1s forwards;
+	-webkit-animation: border-grow 1s forwards;
+	-moz-animation: border-grow 1s forwards;
+}
+
+.MessengerHome-nav button.tab-selected {
+	border-bottom: 2px solid #4849a1;
+}
+.MessengerHome-nav button.tab-selected:hover:after {
+	animation: none;
+}
+
+.no-online-users {
+	height: 90%;
+	width: 100%;
+	padding-top: 6rem;
+	text-align: center;
+}
+
+.no-online-users img {
+	height: 50%;
+	width: 40%;
+	margin: 0 auto;
+}
+
+.no-online-users p {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 13px;
+	letter-spacing: 1px;
+}
+
+#sent-requests-list {
+	width: 85%;
+}
+
+.sent-requests {
+	display: flex;
+	font-weight: 500;
+	padding: 10px;
+	border-radius: 5px;
+	transition: background-color 500ms ease;
+	letter-spacing: 0;
+	border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+}
+.sent-requests img {
+	padding-right: 0.8rem;
+}
+.sent-requests p:last-child {
+	align-self: center;
+	padding-left: 3rem;
+	font-family: 'Montserrat', sans-serif;
+	font-family: 600;
+	font-size: 11px;
+	letter-spacing: 1px;
+	color: #b3b9cb;
+}
+
+@keyframes border-grow {
+	0% {
+		width: 0%;
+		height: 1px;
+	}
+	50% {
+		width: 100%;
+		height: 2px;
+	}
+	100% {
+		width: 100%;
+		height: 2px;
+		background: #4849a1;
+	}
+}

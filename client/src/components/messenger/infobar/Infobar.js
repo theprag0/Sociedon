@@ -4,6 +4,7 @@ import { SocketContext } from '../../../contexts/socket.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import HomeInfobar from './HomeInfobar';
 import '../../../styles/Infobar.css';
+import ChatboxInfobar from './ChatboxInfobar';
 
 function Infobar({userId}) {
     const {userData} = useContext(AuthenticationContext);
@@ -32,6 +33,10 @@ function Infobar({userId}) {
                 friends={friends}
             />
         );
+    } else if(currentBody === 'chatbox') {
+        infobarBody = (
+            <ChatboxInfobar userData={userData}/>
+        )
     }
 
     return (

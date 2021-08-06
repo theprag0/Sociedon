@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import { AuthenticationContext } from '../../../contexts/auth.context';
@@ -7,7 +7,7 @@ import groupMessagesByDate from '../../../helpers/groupMessagesByDate';
 import getDefaultPicture from '../../../helpers/getDefaultPicture';
 
 function FriendsListItem({userData, selected, userId}) {
-    const {setCurrentBody, setChatboxUser, setChatboxLoading, conversations} = useContext(MessengerContext);
+    const {setCurrentBody, setChatboxUser, setChatboxLoading} = useContext(MessengerContext);
     const {token} = useContext(AuthenticationContext);
 
     const handleClick = e => {

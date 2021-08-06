@@ -75,3 +75,123 @@
 .Infobar-friends-list::-webkit-scrollbar-thumb:hover {
 	background-color: rgba(0, 0, 0, 0.3);
 }
+
+.find-friends-illustration {
+	font-family: 'Nunito', sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	letter-spacing: 1px;
+	text-align: center;
+}
+
+.find-friends-illustration img {
+	width: 70%;
+	height: 50%;
+	margin-top: 10%;
+}
+.find-friends-illustration p {
+	margin-top: 10px;
+}
+/* Chatbox Infobar */
+.chatbox-infobar-headings {
+	padding: 1rem;
+	margin-left: 11px;
+	font-family: 'Nunito', sans-serif;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+}
+
+.chatbox-profile-pictures {
+	padding: 10px 1rem;
+	display: flex;
+	justify-content: space-evenly;
+}
+.chatbox-profile-pictures span {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+.chatbox-profile-pictures span p {
+	font-family: 'Nunito', sans-serif;
+	font-weight: 600;
+	font-size: 11px;
+	letter-spacing: 1px;
+}
+.chatbox-profile-pictures img {
+	padding: 0;
+	margin: 0;
+	width: 5rem;
+	height: 5rem;
+	border-radius: 50%;
+	border: 2px solid #fff;
+}
+.chatbox-profile-pictures img:last-child {
+	align-self: flex-start;
+	width: 3rem;
+	height: 3rem;
+}
+
+.multimedia {
+	width: 100%;
+	padding-bottom: 1rem;
+}
+
+.multimedia img {
+	width: 50%;
+	height: 100%;
+	margin-left: 20%;
+	text-align: center;
+}
+
+.multimedia p {
+	font-family: 'Nunito', sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	text-align: center;
+	letter-spacing: 1px;
+}
+
+.view-all {
+	font-family: 'Nunito', sans-serif;
+	font-weight: 600;
+	font-size: 12px;
+	margin-top: 0.5rem;
+	margin-left: 42%;
+	background: none;
+	border: none;
+	color: #f95959;
+	cursor: pointer;
+	border-bottom: 1px solid #f95959;
+}
+
+.attachments p {
+	margin-top: 0.5rem;
+	font-family: 'Nunito', sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	text-align: center;
+	letter-spacing: 1px;
+}
+
+.gradient {
+	animation-duration: 1.8s;
+	animation-fill-mode: forwards;
+	animation-iteration-count: infinite;
+	animation-name: placeHolderShimmer;
+	animation-timing-function: linear;
+	background: #c4c4d5;
+	background: linear-gradient(to right, #eee 8%, #c4c4d5 38%, #eee 54%);
+	background-size: 1000px 640px;
+	position: relative;
+}
+
+@keyframes placeHolderShimmer {
+	0% {
+		background-position: -468px 0;
+	}
+	100% {
+		background-position: 468px 0;
+	}
+}
