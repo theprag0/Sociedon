@@ -42,7 +42,6 @@ function Chatbox({userId}) {
         setChatboxUser(currChatboxUser => {
             // Check if this is the first message in current DM
             if(currChatboxUser.messages && Object.keys(currChatboxUser.messages).length === 0) {
-                console.log('first message');
                 setConversations(currConvo => {
                     const newConversation = {
                         _id: currChatboxUser._id,

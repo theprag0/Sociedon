@@ -93,7 +93,12 @@ const returnRouter = io => {
         
                 return res.json({
                     msg: 'Request sent successfully!', 
-                    status: 'success'
+                    status: 'success',
+                    recipientUserData: {
+                        _id: recipientUser._id,
+                        username: recipientUser.username,
+                        defaultImage: recipientUser.defaultImage
+                    }
                 });
             } else if(req.body.type === 'requestActions') {
                 // Accept or Reject friend request
@@ -169,7 +174,15 @@ const returnRouter = io => {
             } else {
                 return res.json({msg: 'No conversations yet!'});
             }
-        } 
+        } else if(req.params.type === 'sentRequests') {
+            const userId = req.params.userId;
+            const foundRequests = await User.find({friendRequests: {$elemMatch: {from: userId}}}, {
+                username: 1, 
+                defaultImage: 1
+            });
+            if(foundRequests) return res.json({requests: foundRequests});
+            return res.json({msg: 'Something went wrong!'});
+        }
     });
 
     // @route POST /messenger/messages

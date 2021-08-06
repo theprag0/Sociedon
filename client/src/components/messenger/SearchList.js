@@ -1,12 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthenticationContext } from '../../contexts/auth.context';
+import { MessengerContext } from '../../contexts/messenger.context';
 import { withSnackbar } from '../utility/SnackbarHOC';
 import '../../styles/Messenger.css';
 
 function SearchList({userSearchData, type, snackbarShowMessage}) {
     const [requestSent, setRequestSent] = useState(false);
     const {userData, token} = useContext(AuthenticationContext);
+    const {setSentRequests} = useContext(MessengerContext);
 
     // Check if request already exists
     useEffect(() => {
@@ -23,6 +25,7 @@ function SearchList({userSearchData, type, snackbarShowMessage}) {
                 const message = res.data.msg;
                 snackbarShowMessage(`${message} 🐱‍🏍`, 'success');
                 setRequestSent(true);
+                setSentRequests(currRequests => [...currRequests, res.data.recipientUserData]);
             })
             .catch(err => {
                 console.log(err)

@@ -2,11 +2,16 @@ import React from 'react';
 import Search from '../Search';
 import FriendsListItem from '../sidebar/FriendsListItem';
 import getDefaultPicture from '../../../helpers/getDefaultPicture';
+import friendsIllustration from '../../../assets/svg/friends-illus.svg';
 
 function HomeInfobar({userData, userId, friends}) {
     return (
         <>
-            <img src={userData && userData.defaultImage ? getDefaultPicture(userData.defaultImage) : ''} className="Infobar-profile-pic"/>
+            <img 
+                src={userData && userData.defaultImage ? getDefaultPicture(userData.defaultImage) : ''} 
+                className="Infobar-profile-pic"
+                alt="user profile pic"
+            />
             <div className="Infobar-search">
                 <h1>Find new friends</h1>
                 <Search type="friends"/>
@@ -14,18 +19,29 @@ function HomeInfobar({userData, userId, friends}) {
             <hr className="Infobar-hr"/>
             <div className="Infobar-friends" style={{height: '60%'}}>
                 <h1>Friends</h1>
-                <ul className="Infobar-friends-list">
-                    {
-                        (friends && friends.length > 0) ?
-                        friends.map(f => (
-                            <FriendsListItem 
-                                key={f._id}
-                                userId={userId}
-                                userData={f}
+                {
+                    (friends && friends.length > 0) ?
+                    <ul className="Infobar-friends-list">
+                        {
+                            friends.map(f => (
+                                <FriendsListItem 
+                                    key={f._id}
+                                    userId={userId}
+                                    userData={f}
+                                />
+                            )) 
+                        }
+                    </ul>
+                    : (
+                        <div className="find-friends-illustration">
+                            <img  
+                                src={friendsIllustration} 
+                                alt="find friends illustration"
                             />
-                        )) : ''
-                    }
-                </ul>
+                            <p>Find new friends 😸</p>
+                        </div>
+                    )
+                }
             </div>
         </>
     )

@@ -1,8 +1,9 @@
-import React, { useEffect, useContext, useRef, useState } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import io from 'socket.io-client';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
 import Sidebar from './sidebar/Sidebar';
+import MessengerHome from './MessengerHome';
 import Chatbox from './Chatbox';
 import Infobar from './infobar/Infobar';
 import Notifications from './Notifications';
@@ -101,9 +102,9 @@ function Messenger({history, match, snackbarShowMessage}) {
     let messengerBody;
     if(currentBody === 'home') {
         messengerBody = (
-            <>
-                <h1>Messenger</h1>
-            </>
+            <MessengerHome 
+                userId={match.params.id}
+            />
         )
     } else if(currentBody === 'chatbox') {
         messengerBody = (
@@ -123,7 +124,9 @@ function Messenger({history, match, snackbarShowMessage}) {
                 <div style={{height: '15%'}}>
                     <Notifications userId={match.params.id}/>
                 </div>
-                <Infobar userId={match.params.id}/>
+                <Infobar 
+                    userId={match.params.id}
+                />
             </div>
         </section>
     );
