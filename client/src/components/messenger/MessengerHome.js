@@ -2,14 +2,14 @@ import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import { MessengerContext } from '../../contexts/messenger.context'; 
-import groupMessagesByDate from '../../helpers/groupMessagesByDate';
+import OnlineUserItem from './OnlineUserItem';
 import getDefaultPicture from '../../helpers/getDefaultPicture';
 import noOnlineFriends from '../../assets/svg/no-online-illus.svg';
 import noRequests from '../../assets/svg/no-requests-illus.svg';
 
 function MessengerHome({userId}) {
-    const {token, userData} = useContext(AuthenticationContext);
-    const {friends, setCurrentBody, setChatboxUser, setChatboxLoading, sentRequests, setSentRequests} = useContext(MessengerContext);
+    const {token} = useContext(AuthenticationContext);
+    const {friends, sentRequests, setSentRequests} = useContext(MessengerContext);
     const [currTab, setCurrTab] = useState('online');
 
     // Retrieve sent friend requests
@@ -22,28 +22,6 @@ function MessengerHome({userId}) {
                 setSentRequests(res.data.requests);
             }).catch(err => console.log(err));
     }, [friends]);
-
-    const handleClick = e => {
-        setCurrentBody('chatbox');
-        setChatboxLoading(true);
-        // Load initial message data
-        const config = {
-            headers: {'x-auth-token': token}
-        };
-        axios.post('/messenger/messages', {
-            type: 'dm',
-            userA: userId,
-            userB: userData._id
-        }, config).then(res => {
-            if(res.data.messages && res.data.messages.length > 0) {
-                const messages = groupMessagesByDate(res.data.messages);
-                setChatboxUser({...userData, messages});
-            } else {
-                setChatboxUser({...userData, messages: {}});
-            }
-            setChatboxLoading(false);
-        }).catch(err => console.log(err));
-    }
 
     // Change tab
     const changeTab = e => {
@@ -83,17 +61,11 @@ function MessengerHome({userId}) {
                                 {
                                     onlineUsers.map(f => {
                                         return (
-                                            <li key={f._id} className='FriendsListItem' onClick={handleClick}>
-                                                <div className="img-container">
-                                                    <img 
-                                                        className="user-avatar" 
-                                                        src={f.defaultImage ? getDefaultPicture(f.defaultImage) : f.image}
-                                                        alt="user avatar"
-                                                    />
-                                                    <p className={f.status === 'online' ? 'online' : 'offline'}></p>
-                                                </div>
-                                                <p>{f.username}</p>
-                                            </li>
+                                            <OnlineUserItem
+                                                key={f._id} 
+                                                userData={f} 
+                                                userId={userId}
+                                            />
                                         )
                                     })
                                 }

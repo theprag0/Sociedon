@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 const User = require('../../models/User');
 const DM = require('../../models/DM');
 const Arena = require('../../models/Arena');
@@ -191,12 +192,34 @@ const returnRouter = io => {
     router.post('/messages', auth, async (req, res) => {
         const {type} = req.body;
         if(type === 'dm') {
-            const {userA, userB} = req.body;
+            const {userA, userB, startDate} = req.body;
+            const firstDate = moment(startDate).format('DD-MM-YYYY');
+            const previousDate = moment(startDate).subtract(1, 'day').format('DD-MM-YYYY');
             
             // Check if DM exists
             const existingDm = await DM.findOne({users: {$size: 2, $all: [userA, userB]}});
+
+            // Extract messages from given first and previous date
+            // Reverse the messages array since the most recent messages are pushed to the 
+            // messages array
+            const reverseMessages = [...existingDm.messages].reverse();
+            let messages = [];
+            // Check if there's more messages to load from other dates
+            let unloadedMsgAvailable = false;
+            for(let i = 0; i < reverseMessages.length; i++) {
+                const msgTimestamp = moment(reverseMessages[i].timestamp).format('DD-MM-YYYY');
+                if(msgTimestamp === firstDate || msgTimestamp === previousDate) {
+                    messages.push(reverseMessages[i]);
+                } else {
+                    // Set to true since other messsages from other dates are available
+                    unloadedMsgAvailable = true;
+                    break;
+                }
+            }
+    
             if(!existingDm) return res.json({msg: 'No existing DM doc'});
-            return res.json({messages: existingDm.messages});
+            return res.json({messages: [...messages].reverse(), unloadedMsgAvailable});
+            // return res.json({messages: existingDm.messages});
         }
     });
 
