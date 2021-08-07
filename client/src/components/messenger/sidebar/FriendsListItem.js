@@ -20,11 +20,18 @@ function FriendsListItem({userData, selected, userId}) {
         axios.post('/messenger/messages', {
             type: 'dm',
             userA: userId,
-            userB: userData._id
+            userB: userData._id,
+            startDate: new Date()
         }, config).then(res => {
             if(res.data.messages && res.data.messages.length > 0) {
                 const messages = groupMessagesByDate(res.data.messages);
-                setChatboxUser({...userData, messages});
+                const lastDateLoaded = Object.keys(messages)[0];
+                setChatboxUser({
+                    ...userData, 
+                    messages, 
+                    lastDateLoaded,
+                    unloadedMsgAvailable: res.data.unloadedMsgAvailable
+                });
             } else {
                 setChatboxUser({...userData, messages: {}});
             }

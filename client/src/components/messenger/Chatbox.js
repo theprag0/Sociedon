@@ -1,17 +1,23 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
+import axios from 'axios';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { MessengerContext } from '../../contexts/messenger.context';
+import { AuthenticationContext } from '../../contexts/auth.context';
 import { SocketContext } from '../../contexts/socket.context';
+import { MessengerContext } from '../../contexts/messenger.context';
 import MessageInput from './MessageInput';
+import groupMessagesByDate from '../../helpers/groupMessagesByDate';
 import getDefaultPicture from '../../helpers/getDefaultPicture';
 import '../../styles/Chatbox.css';
 import chatbox2 from '../../assets/svg/chatbox2.svg';
+import msgLoader from '../../assets/svg/chatbox-msg-loader.svg';
 
 function Chatbox({userId}) {
-    const {chatboxUser, setChatboxUser, chatboxLoading, conversations, setConversations, currentBody} = useContext(MessengerContext);
+    const {token} = useContext(AuthenticationContext);
     const {socket} = useContext(SocketContext);
+    const {chatboxUser, setChatboxUser, chatboxLoading, conversations, setConversations} = useContext(MessengerContext);
     const [isScrolling, setIsScrolling] = useState(false);
+    const [msgLoading, setMsgLoading] = useState(false);
 
     const friendImgSrc = chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : chatboxUser.image;
 
@@ -140,7 +146,40 @@ function Chatbox({userId}) {
                 });
             }
         }
-    }, [chatboxUser.messages])
+    }, [chatboxUser.messages]);
+
+    // Load old messages
+    const unloadedMsgAvailable = chatboxUser && chatboxUser.unloadedMsgAvailable ? chatboxUser.unloadedMsgAvailable : false;
+    const lastDateLoaded = chatboxUser && chatboxUser.lastDateLoaded ? chatboxUser.lastDateLoaded : '';
+    const loadMessages = () => {
+        setMsgLoading(true);
+        const config = {
+            headers: {'x-auth-token': token}
+        }
+        axios.post('/messenger/messages', {
+            type: 'dm',
+            userA: userId,
+            userB: chatboxUserId.current,
+            startDate: moment(lastDateLoaded).subtract(1, 'day').toDate()
+        }, config).then(res => {
+            setMsgLoading(false);
+            if(res.data.messages && res.data.messages.length > 0) {
+                const messages = groupMessagesByDate(res.data.messages);
+                const lastDateLoaded = Object.keys(messages)[0];
+                setChatboxUser(currUser => {
+                    return {
+                        ...currUser,
+                        messages: {...messages, ...currUser.messages},
+                        lastDateLoaded,
+                        unloadedMsgAvailable: res.data.unloadedMsgAvailable
+                    }
+                });
+            }
+        }).catch(err => {
+            setMsgLoading(false);
+            console.log(err)
+        });
+    }
 
     // Show skeleton layout when chatbox is loading
     const loadingList = Array.from({length: 10}, (_, i) => {
@@ -150,6 +189,8 @@ function Chatbox({userId}) {
         return <li key={i} className="loading-list they gradient"></li>
     });
 
+    const todayDate = moment().format('DD-MM-YYYY');
+    const yesterdayDate = moment().subtract(1, 'day').format('DD-MM-YYYY');
     return (
         <section className="Chatbox">
             <section className="messages">
@@ -191,12 +232,28 @@ function Chatbox({userId}) {
                 {
                     !chatboxLoading ?
                     <ul className={`message-list ${isScrolling ? 'scroll-list' : ''}`} onScroll={handleScroll}>
+                        <div style={{display: unloadedMsgAvailable ? 'block' : 'none'}} className="load-messages">
+                            {
+                                !msgLoading ?
+                                <button 
+                                    onClick={loadMessages}
+                                    disabled={unloadedMsgAvailable ? false : true}
+                                >
+                                    +
+                                </button>
+                                : <img src={msgLoader} alt="message loading gif"/>
+                            }
+                        </div>
                         {
                             (chatboxUser && Object.keys(chatboxUser.messages).length > 0) ?
                             Object.keys(chatboxUser.messages).map(date => {
                                 return (
                                     <React.Fragment key={date}>
-                                        <h1 className="chat-date"><span>{date}</span></h1>
+                                        <h1 className="chat-date">
+                                            <span>
+                                                {date === todayDate ? 'Today' : date === yesterdayDate ? 'Yesterday' : date}
+                                            </span>
+                                        </h1>
                                         {chatboxUser.messages[date].map(m => {
                                             if(m.from === userId) {
                                                 return (
