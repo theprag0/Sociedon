@@ -21,7 +21,6 @@ function FriendsListItem({userData, selected, userId}) {
             type: 'dm',
             userA: userId,
             userB: userData._id,
-            startDate: new Date(),
             metaData: 'initial-load'
         }, config).then(res => {
             if(res.data.messages && res.data.messages.length > 0) {

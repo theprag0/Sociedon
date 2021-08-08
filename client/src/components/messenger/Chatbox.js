@@ -5,12 +5,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
 import MessageInput from './MessageInput';
 import groupMessagesByDate from '../../helpers/groupMessagesByDate';
 import getDefaultPicture from '../../helpers/getDefaultPicture';
+import useTooltipStyles from '../../styles/TooltipStyles';
 import '../../styles/Chatbox.css';
 import chatbox2 from '../../assets/svg/chatbox2.svg';
 import msgLoader from '../../assets/svg/chatbox-msg-loader.svg';
+import videoCallIllustration from '../../assets/images/video-call-illus.jpg';
+import voiceCallIllustration from '../../assets/images/voice-call-illus.jpg';
 
 function Chatbox({userId}) {
     const {token} = useContext(AuthenticationContext);
@@ -19,6 +24,7 @@ function Chatbox({userId}) {
     const [isScrolling, setIsScrolling] = useState(false);
     const [msgLoading, setMsgLoading] = useState(false);
     const [allowScroll, setAllowScroll] = useState(true);
+    const tooltipClasses = useTooltipStyles();
 
     const friendImgSrc = chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : chatboxUser.image;
 
@@ -231,8 +237,45 @@ function Chatbox({userId}) {
                         </span>
                     </div>
                     <div className="icons">
-                        <i className="fas fa-phone-alt"></i>
-                        <i className="fas fa-video"></i>
+                        <Tooltip
+                            classes={tooltipClasses} 
+                            title={
+                                <div className="upcoming-feature">
+                                    <img src={voiceCallIllustration} alt="voice-call illustration"/>
+                                    <h1>Voice Calls</h1>
+                                    <em><p>Upcoming Feature</p></em>
+                                    <p>Enter voice channels with friends.</p>
+                                    <p>Stay Tuned! 😉</p>
+                                </div>
+                            } 
+                            placement="bottom-end" 
+                            TransitionComponent={Zoom} 
+                            TransitionProps={{ timeout: 600 }}
+                            arrow
+                        >
+                            <i className="fas fa-phone-alt"></i>
+                        </Tooltip>
+                        <Tooltip
+                            classes={tooltipClasses} 
+                            title={
+                                <div className="upcoming-feature">
+                                    <img  
+                                        src={videoCallIllustration} 
+                                        alt="video-call illustration"
+                                    />
+                                    <h1>Video Chats</h1>
+                                    <em><p>Upcoming Feature</p></em>
+                                    <p>Enter video calls with friends.</p>
+                                    <p>Stay Tuned! 😉</p>
+                                </div>
+                            } 
+                            placement="bottom-end" 
+                            TransitionComponent={Zoom} 
+                            TransitionProps={{ timeout: 600 }}
+                            arrow
+                        >
+                            <i className="fas fa-video"></i>
+                        </Tooltip>
                         <i className="fas fa-ellipsis-v"></i>
                     </div>
                 </div>

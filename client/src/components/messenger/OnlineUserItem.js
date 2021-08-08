@@ -1,13 +1,21 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import { MessengerContext } from '../../contexts/messenger.context';
 import { AuthenticationContext } from '../../contexts/auth.context';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import groupMessagesByDate from '../../helpers/groupMessagesByDate';
 import getDefaultPicture from '../../helpers/getDefaultPicture';
+import useTooltipStyles from '../../styles/TooltipStyles';
+import videoCallIllustration from '../../assets/images/video-call-illus.jpg';
+import voiceCallIllustration from '../../assets/images/voice-call-illus.jpg';
 
 function OnlineUserItem({userData, userId}) {
     const {token} = useContext(AuthenticationContext);
     const {setCurrentBody, setChatboxUser, setChatboxLoading} = useContext(MessengerContext);
+    const [tooltipIsOpen, setTooltipIsOpen] = useState({videoIcon: false, voiceIcon: false});
+    const tooltipClasses = useTooltipStyles();
 
     const handleClick = e => {
         e.stopPropagation();
@@ -21,7 +29,6 @@ function OnlineUserItem({userData, userId}) {
             type: 'dm',
             userA: userId,
             userB: userData._id,
-            startDate: new Date(),
             metaData: 'initial-load'
         }, config).then(res => {
             if(res.data.messages && res.data.messages.length > 0) {
@@ -40,9 +47,17 @@ function OnlineUserItem({userData, userId}) {
         }).catch(err => console.log(err));
     }
 
-    const upcomingFeature = e => {
+    const handleTooltipClose = () => {
+        setTooltipIsOpen({videoIcon: false, voiceIcon: false});
+    };
+    const handleTooltipOpen = e => {
         e.stopPropagation();
-    }
+        if(e.currentTarget.title === 'video-icon') {
+            setTooltipIsOpen({videoIcon: true, voiceIcon: false});
+        } else {
+            setTooltipIsOpen({videoIcon: false, voiceIcon: true});
+        }
+    };    
 
     return (
         <li className='FriendsListItem MessengerHome-item' onClick={handleClick}>
@@ -58,9 +73,62 @@ function OnlineUserItem({userData, userId}) {
                 <p>{userData.username}</p>
             </div>
             <div className="icons">
-                <i className="fas fa-phone-alt" onClick={upcomingFeature}></i>
-                <i className="fas fa-video" onClick={upcomingFeature}></i>
-                <i class="fas fa-comment-alt" onClick={handleClick}></i>
+                <ClickAwayListener onClickAway={handleTooltipClose}>
+                    <Tooltip
+                        classes={tooltipClasses} 
+                        title={
+                            <div className="upcoming-feature">
+                                <img src={voiceCallIllustration} alt="voice-call illustration"/>
+                                <h1>Voice Calls</h1>
+                                <em><p>Upcoming Feature</p></em>
+                                <p>Enter voice channels with friends.</p>
+                                <p>Stay Tuned! 😉</p>
+                            </div>
+                        } 
+                        placement="bottom-end" 
+                        TransitionComponent={Zoom} 
+                        TransitionProps={{ timeout: 600 }}
+                        open={tooltipIsOpen.voiceIcon}
+                        disableFocusListener
+                        disableHoverListener
+                        disableTouchListener
+                        arrow
+                    >
+                        <div>
+                            <i className="fas fa-phone-alt" title="voice-icon" onClick={handleTooltipOpen}></i>
+                        </div>
+                    </Tooltip>
+                </ClickAwayListener>
+                <ClickAwayListener onClickAway={handleTooltipClose}>
+                    <Tooltip
+                        classes={tooltipClasses} 
+                        title={
+                            <div className="upcoming-feature">
+                                <img  
+                                    src={videoCallIllustration} 
+                                    alt="video-call illustration"
+                                />
+                                <h1>Video Chats</h1>
+                                <em><p>Upcoming Feature</p></em>
+                                <p>Enter video calls with friends.</p>
+                                <p>Stay Tuned! 😉</p>
+                            </div>
+                        } 
+                        placement="bottom-end" 
+                        TransitionComponent={Zoom} 
+                        TransitionProps={{ timeout: 600 }}
+                        open={tooltipIsOpen.videoIcon}
+                        disableFocusListener
+                        disableHoverListener
+                        disableTouchListener
+                        arrow
+                    >
+                        <div>
+                            <i className="fas fa-video" title="video-icon" onClick={handleTooltipOpen}></i>
+                        </div>
+                    </Tooltip>
+                </ClickAwayListener>
+                <i className="fas fa-comment-alt" onClick={handleClick}></i>
             </div>
         </li>
     );

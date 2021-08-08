@@ -120,6 +120,10 @@
 	justify-content: space-between;
 }
 
+.MessengerHome-item .icons {
+	display: flex;
+	align-items: center;
+}
 .MessengerHome-item .icons i {
 	background-color: #f4f4fa;
 	color: #c4c4d5;
@@ -233,4 +237,36 @@
 		height: 2px;
 		background: #4849a1;
 	}
+}
+
+/* Upcoming features */
+.upcoming-feature {
+	font-family: 'Montserrat', sans-serif;
+}
+
+.upcoming-feature img {
+	padding: 0;
+	width: 100%;
+}
+
+.upcoming-feature h1 {
+	padding: 10px;
+	padding-bottom: 0;
+	font-size: 18px;
+	letter-spacing: 1px;
+}
+
+.upcoming-feature em p {
+	padding: 5px 10px;
+	font-weight: 500;
+	font-size: 12px;
+	letter-spacing: 1px;
+}
+
+.upcoming-feature p {
+	padding: 5px 10px;
+	font-size: 13px;
+}
+.upcoming-feature p:last-child {
+	padding: 10px;
 }
