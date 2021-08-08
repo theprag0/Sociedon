@@ -15,8 +15,10 @@ function Messenger({history, match, snackbarShowMessage}) {
 
     // Replace redirect history
     useEffect(() => {
-        if(history.location.state) {
+        if(history.location.state && history.location.state.type === 'welcome') {
             snackbarShowMessage(history.location.state.message, 'welcome');
+        } else if(history.location.state && history.location.state.type === 'warning') {
+            snackbarShowMessage(history.location.state.message, 'warning');
         }
         history.replace({...history.location, state: undefined}); 
     }, [history]);

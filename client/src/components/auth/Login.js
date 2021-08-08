@@ -1,14 +1,24 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import useInputState from '../../hooks/useInputState';
 import { AuthenticationContext } from '../../contexts/auth.context';
 
 function Login(props) {
     // Handle Form Inputs
+    const {isAuthenticated, setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken, setMsg} = useContext(AuthenticationContext);
     const [email, setEmail, resetEmail] = useInputState('');
     const [password, setPassword, resetPassword] = useInputState('');
-    const {setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken, setMsg} = useContext(AuthenticationContext);
+
+    // Check if user is already authenticated and redirect back 
+    const existingToken = window.localStorage.getItem('token');
+    const existingUserId = window.localStorage.getItem('currUserId');
+    if(isAuthenticated && existingToken && existingUserId && existingToken !== undefined && existingUserId !== undefined) {
+        props.history.push({
+            pathname: `/messenger/${existingUserId}`,
+            state: {message: "You're logged in already! 🤨😀", type: 'warning'}
+        });
+    }
 
     // Handle login form submission
     const handleSubmit = e => {
@@ -22,9 +32,10 @@ function Login(props) {
                 setUserData(res.data.user);
                 setToken(res.data.token);
                 window.localStorage.setItem('token', res.data.token);
+                window.localStorage.setItem('currUserId', res.data.user.id);
                 props.history.push({
                     pathname: `/messenger/${res.data.user.id}`,
-                    state: {message: `Welcome back ${res.data.user.username}!`}
+                    state: {message: `Welcome back ${res.data.user.username}!`, type: 'welcome'}
                 });
             })
             .catch(err => {

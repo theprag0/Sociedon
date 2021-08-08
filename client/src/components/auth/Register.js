@@ -13,7 +13,17 @@ function Register(props) {
     const [month, setMonth, resetMonth] = useInputState('');
     const [day, setDay, resetDay] = useInputState('');
     const [year, setYear, resetYear] = useInputState('');
-    const {setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken} = useContext(AuthenticationContext);
+    const {isAuthenticated, setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken} = useContext(AuthenticationContext);
+
+    // Check if user is already authenticated and redirect back 
+    const existingToken = window.localStorage.getItem('token');
+    const existingUserId = window.localStorage.getItem('currUserId');
+    if(isAuthenticated && existingToken && existingUserId && existingToken !== undefined && existingUserId !== undefined) {
+        props.history.push({
+            pathname: `/messenger/${existingUserId}`,
+            state: {message: "You're logged in already! 🤨😀", type: 'warning'}
+        });
+    }
 
     // Date of birth data
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -56,6 +66,7 @@ function Register(props) {
                 setStatus(res.status);
                 setToken(res.data.token);
                 window.localStorage.setItem('token', res.data.token);
+                window.localStorage.setItem('currUserId', res.data.user.id);
                 props.history.push(`/messenger/${res.data.user.id}`);
             })
             .catch(err => {

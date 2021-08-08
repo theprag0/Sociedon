@@ -151,38 +151,42 @@ const returnRouter = io => {
     // @desc Retrieve various data(pending requests, online friends etc.) for messenger
     // @access Private
     router.get('/retrieve/:type/:userId', auth, async (req, res) => {
-        if(req.params.type === 'friendRequests') {
-            const pendingRequests = await User.findById({_id: req.params.userId}, {friendRequests: 1}).populate('friendRequests.from', 'username');
-        
-            if(pendingRequests.length === 0 || !pendingRequests) {
-                return res.json({msg: 'No Pending Requests!'});
-            }
-    
-            const filterRequests = pendingRequests.friendRequests.map(p => (
-                {fromId: p.from._id, fromUsername: p.from.username, status: p.status}
-            ));
-            return res.json({requests: filterRequests});
-        } else if(req.params.type === 'conversations') {
-            // Send user's conversations/direct messages on connection
-            const userId = req.params.userId;
-            const userDms = await DM.find({users: {$in: userId}}).populate('users', 'username status defaultImage');
+        try{
+            if(req.params.type === 'friendRequests') {
+                const pendingRequests = await User.findById({_id: req.params.userId}, {friendRequests: 1}).populate('friendRequests.from', 'username');
             
-            if(userDms && userDms.length > 0) {
-                const userConversations = getUserConversations(userDms, userId);
-                if(userConversations && userConversations.length > 0) {
-                    return res.json({conversations: userConversations});
+                if(pendingRequests.length === 0 || !pendingRequests) {
+                    return res.json({msg: 'No Pending Requests!'});
                 }
-            } else {
-                return res.json({msg: 'No conversations yet!'});
+        
+                const filterRequests = pendingRequests.friendRequests.map(p => (
+                    {fromId: p.from._id, fromUsername: p.from.username, status: p.status}
+                ));
+                return res.json({requests: filterRequests});
+            } else if(req.params.type === 'conversations') {
+                // Send user's conversations/direct messages on connection
+                const userId = req.params.userId;
+                const userDms = await DM.find({users: {$in: userId}}).populate('users', 'username status defaultImage');
+                
+                if(userDms && userDms.length > 0) {
+                    const userConversations = getUserConversations(userDms, userId);
+                    if(userConversations && userConversations.length > 0) {
+                        return res.json({conversations: userConversations});
+                    }
+                } else {
+                    return res.json({msg: 'No conversations yet!'});
+                }
+            } else if(req.params.type === 'sentRequests') {
+                const userId = req.params.userId;
+                const foundRequests = await User.find({friendRequests: {$elemMatch: {from: userId}}}, {
+                    username: 1, 
+                    defaultImage: 1
+                });
+                if(foundRequests) return res.json({requests: foundRequests});
+                return res.json({msg: 'Something went wrong!'});
             }
-        } else if(req.params.type === 'sentRequests') {
-            const userId = req.params.userId;
-            const foundRequests = await User.find({friendRequests: {$elemMatch: {from: userId}}}, {
-                username: 1, 
-                defaultImage: 1
-            });
-            if(foundRequests) return res.json({requests: foundRequests});
-            return res.json({msg: 'Something went wrong!'});
+        } catch(err) {
+            console.log(err);
         }
     });
 
@@ -190,47 +194,51 @@ const returnRouter = io => {
     // @desc Send all messages in DM
     // @access Private
     router.post('/messages', auth, async (req, res) => {
-        const {type} = req.body;
-        if(type === 'dm') {
-            const {userA, userB, startDate} = req.body;
-            const metaData = req.body.metaData ? req.body.metaData : '';
-        
-            // Check if DM exists
-            const existingDm = await DM.findOne({users: {$size: 2, $all: [userA, userB]}});
-            if(!existingDm) return res.json({msg: 'No existing DM doc'});
-
-            let initialDate;
-            if(existingDm) {
-                if(metaData === 'initial-load') {
-                    initialDate = existingDm.messages[existingDm.messages.length - 1].timestamp;
-                } else {
-                    initialDate = startDate;
-                }
-            }
+        try{
+            const {type} = req.body;
+            if(type === 'dm') {
+                const {userA, userB, startDate} = req.body;
+                const metaData = req.body.metaData ? req.body.metaData : '';
             
-            const firstDate = moment(initialDate).format('DD-MM-YYYY');
-            const previousDate = moment(initialDate).subtract(1, 'day').format('DD-MM-YYYY');
-            const dateToStopLoop = moment(initialDate).subtract(2, 'days').format('DD-MM-YYYY');
-        
-            // Extract messages from given first and previous date
-            // Reverse the messages array since the most recent messages are pushed to the 
-            // messages array
-            const reverseMessages = [...existingDm.messages].reverse();
-            let messages = [];
-            // Check if there's more messages to load from other dates
-            let unloadedMsgAvailable = false;
-            for(let i = 0; i < reverseMessages.length; i++) {
-                const msgTimestamp = moment(reverseMessages[i].timestamp).format('DD-MM-YYYY');
-                if(msgTimestamp === firstDate || msgTimestamp === previousDate) {
-                    messages.push(reverseMessages[i]);
-                } else if(msgTimestamp === dateToStopLoop) {
-                    // Set to true since other messsages from other dates are available
-                    unloadedMsgAvailable = true;
-                    break;
+                // Check if DM exists
+                const existingDm = await DM.findOne({users: {$size: 2, $all: [userA, userB]}});
+                if(!existingDm) return res.json({msg: 'No existing DM doc'});
+    
+                let initialDate;
+                if(existingDm) {
+                    if(metaData === 'initial-load') {
+                        initialDate = existingDm.messages[existingDm.messages.length - 1].timestamp;
+                    } else {
+                        initialDate = startDate;
+                    }
                 }
-            }
+                
+                const firstDate = moment(initialDate).format('DD-MM-YYYY');
+                const previousDate = moment(initialDate).subtract(1, 'day').format('DD-MM-YYYY');
+                const dateToStopLoop = moment(initialDate).subtract(2, 'days').format('DD-MM-YYYY');
             
-            return res.json({messages: [...messages].reverse(), unloadedMsgAvailable});
+                // Extract messages from given first and previous date
+                // Reverse the messages array since the most recent messages are pushed to the 
+                // messages array
+                const reverseMessages = [...existingDm.messages].reverse();
+                let messages = [];
+                // Check if there's more messages to load from other dates
+                let unloadedMsgAvailable = false;
+                for(let i = 0; i < reverseMessages.length; i++) {
+                    const msgTimestamp = moment(reverseMessages[i].timestamp).format('DD-MM-YYYY');
+                    if(msgTimestamp === firstDate || msgTimestamp === previousDate) {
+                        messages.push(reverseMessages[i]);
+                    } else if(msgTimestamp === dateToStopLoop) {
+                        // Set to true since other messsages from other dates are available
+                        unloadedMsgAvailable = true;
+                        break;
+                    }
+                }
+                
+                return res.json({messages: [...messages].reverse(), unloadedMsgAvailable});
+            }
+        } catch(err) {
+            console.log(err);
         }
     });
 
@@ -238,16 +246,20 @@ const returnRouter = io => {
     // @desc send friend information/profile
     // @access Private
     router.post('/profile', auth, async (req, res) => {
-        const {friendId} = req.body;
-        const foundFriend = await User.findOne({_id: friendId}, {
-            username: 1,
-            defaultImage: 1,
-            status: 1
-        });
-        if(foundFriend) {
-            return res.json({...foundFriend.toObject()});
+        try{
+            const {friendId} = req.body;
+            const foundFriend = await User.findOne({_id: friendId}, {
+                username: 1,
+                defaultImage: 1,
+                status: 1
+            });
+            if(foundFriend) {
+                return res.json({...foundFriend.toObject()});
+            }
+            return res.json({msg: 'User not found!'});
+        } catch(err) {
+            console.log(err);
         }
-        return res.json({msg: 'User not found!'});
     });
 
     return router;

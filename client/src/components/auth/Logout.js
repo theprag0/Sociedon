@@ -27,11 +27,12 @@ function Logout(props) {
 
     const handleLogout = () => {
         window.localStorage.removeItem('token');
+        window.localStorage.removeItem('currUserId');
         setIsAuthenticated(false);
         setUserLoading(true);
         setUserData({});
         setToken(null);
-        socket.disconnect(true);
+        if(socket !== null) socket.disconnect(true);
         props.history.push('/');
     }
 
