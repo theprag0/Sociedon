@@ -119,7 +119,14 @@ function Notifications({userId, snackbarShowMessage}) {
                     </span>
                 </i>
             </Button>
-            <Popper className={classes.popper} open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+            <Popper 
+                className={classes.popper} 
+                open={open} 
+                anchorEl={anchorRef.current} 
+                role={undefined} 
+                transition 
+                disablePortal
+            >
                 {({ TransitionProps, placement }) => (
                 <Grow
                     {...TransitionProps}

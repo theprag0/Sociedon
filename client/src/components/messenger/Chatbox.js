@@ -18,6 +18,7 @@ function Chatbox({userId}) {
     const {chatboxUser, setChatboxUser, chatboxLoading, conversations, setConversations} = useContext(MessengerContext);
     const [isScrolling, setIsScrolling] = useState(false);
     const [msgLoading, setMsgLoading] = useState(false);
+    const [allowScroll, setAllowScroll] = useState(true);
 
     const friendImgSrc = chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : chatboxUser.image;
 
@@ -25,9 +26,12 @@ function Chatbox({userId}) {
     const chatboxUserId = useRef(null);
     useEffect(() => {
         chatboxUserId.current = chatboxUser._id;
-        let scrollTimer = setTimeout(() => {
-            msgEndRef.current.scrollIntoView({behavior: 'smooth'});
-        }, 50);
+        let scrollTimer;
+        if(allowScroll) {
+            scrollTimer = setTimeout(() => {
+                msgEndRef.current.scrollIntoView({behavior: 'smooth'});
+            }, 50);
+        }
 
         return () => clearTimeout(scrollTimer);
     }, [chatboxUser]);
@@ -45,6 +49,7 @@ function Chatbox({userId}) {
         const newMsg = {...msg, status: 'sending', tempId: uuidv4()};
         const msgDate = moment(newMsg.timestamp).format('DD-MM-YYYY');
         
+        setAllowScroll(true);
         setChatboxUser(currChatboxUser => {
             // Check if this is the first message in current DM
             if(currChatboxUser.messages && Object.keys(currChatboxUser.messages).length === 0) {
@@ -153,6 +158,7 @@ function Chatbox({userId}) {
     const lastDateLoaded = chatboxUser && chatboxUser.lastDateLoaded ? chatboxUser.lastDateLoaded : '';
     const loadMessages = () => {
         setMsgLoading(true);
+        setAllowScroll(false);
         const config = {
             headers: {'x-auth-token': token}
         }
@@ -160,12 +166,13 @@ function Chatbox({userId}) {
             type: 'dm',
             userA: userId,
             userB: chatboxUserId.current,
-            startDate: moment(lastDateLoaded).subtract(1, 'day').toDate()
+            startDate: moment(lastDateLoaded, 'DD-MM-YYYY').subtract(1, 'day').toISOString()
         }, config).then(res => {
             setMsgLoading(false);
             if(res.data.messages && res.data.messages.length > 0) {
                 const messages = groupMessagesByDate(res.data.messages);
                 const lastDateLoaded = Object.keys(messages)[0];
+                console.log(messages);
                 setChatboxUser(currUser => {
                     return {
                         ...currUser,

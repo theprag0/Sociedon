@@ -10,6 +10,7 @@ function OnlineUserItem({userData, userId}) {
     const {setCurrentBody, setChatboxUser, setChatboxLoading} = useContext(MessengerContext);
 
     const handleClick = e => {
+        e.stopPropagation();
         setCurrentBody('chatbox');
         setChatboxLoading(true);
         // Load initial message data
@@ -20,7 +21,8 @@ function OnlineUserItem({userData, userId}) {
             type: 'dm',
             userA: userId,
             userB: userData._id,
-            startDate: new Date()
+            startDate: new Date(),
+            metaData: 'initial-load'
         }, config).then(res => {
             if(res.data.messages && res.data.messages.length > 0) {
                 const messages = groupMessagesByDate(res.data.messages);
@@ -38,17 +40,28 @@ function OnlineUserItem({userData, userId}) {
         }).catch(err => console.log(err));
     }
 
+    const upcomingFeature = e => {
+        e.stopPropagation();
+    }
+
     return (
-        <li className='FriendsListItem' onClick={handleClick}>
-            <div className="img-container">
-                <img 
-                    className="user-avatar" 
-                    src={userData.defaultImage ? getDefaultPicture(userData.defaultImage) : userData.image}
-                    alt="user avatar"
-                />
-                <p className={userData.status === 'online' ? 'online' : 'offline'}></p>
+        <li className='FriendsListItem MessengerHome-item' onClick={handleClick}>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <div className="img-container">
+                    <img 
+                        className="user-avatar" 
+                        src={userData.defaultImage ? getDefaultPicture(userData.defaultImage) : userData.image}
+                        alt="user avatar"
+                    />
+                    <p className={userData.status === 'online' ? 'online' : 'offline'}></p>
+                </div>
+                <p>{userData.username}</p>
             </div>
-            <p>{userData.username}</p>
+            <div className="icons">
+                <i className="fas fa-phone-alt" onClick={upcomingFeature}></i>
+                <i className="fas fa-video" onClick={upcomingFeature}></i>
+                <i class="fas fa-comment-alt" onClick={handleClick}></i>
+            </div>
         </li>
     );
 }
