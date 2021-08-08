@@ -34,6 +34,7 @@ export function AuthenticationProvider(props) {
                 setMsg(err.response.data.msg);
                 setUserData(null);
                 window.localStorage.removeItem('token');
+                window.localStorage.removeItem('currUserId');
             });
     }, [token]);
 
