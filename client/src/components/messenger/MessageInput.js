@@ -4,17 +4,22 @@ import { Picker } from 'emoji-mart';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Popover from '@material-ui/core/Popover';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
 import 'emoji-mart/css/emoji-mart.css'
 import useInputState from '../../hooks/useInputState';
 import useStyles from '../../styles/MessageInputStyles';
+import useTooltipStyles from '../../styles/TooltipStyles';
+import fileSharingIllustration from '../../assets/images/file-sharing-illus.jpg';
 
 function MessageInput({addMessage, userId}) {
     const {chatboxUser} = useContext(MessengerContext);
     const [message, setMessage, resetMessage, setEmoji] = useInputState('', false);
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
+    const tooltipClasses = useTooltipStyles();
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -23,7 +28,7 @@ function MessageInput({addMessage, userId}) {
                 from: userId, 
                 recipient: chatboxUser._id,
                 timestamp: Date.now(), 
-                message
+                message: message.trim()
             });
             resetMessage();
         }
@@ -77,7 +82,24 @@ function MessageInput({addMessage, userId}) {
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <AddCircleOutlineIcon className={classes.inputBtns}/>
+                                <Tooltip
+                                    classes={tooltipClasses} 
+                                    title={
+                                        <div className="upcoming-feature">
+                                            <img src={fileSharingIllustration} alt="voice-call illustration"/>
+                                            <h1>File Sharing</h1>
+                                            <em><p>Upcoming Feature</p></em>
+                                            <p>Share your favourite images, files and other multimedia.</p>
+                                            <p>Stay Tuned! 😉</p>
+                                        </div>
+                                    } 
+                                    placement="top" 
+                                    TransitionComponent={Zoom} 
+                                    TransitionProps={{ timeout: 600 }}
+                                    arrow
+                                >
+                                    <AddCircleOutlineIcon className={classes.inputBtns}/>
+                                </Tooltip>
                             </InputAdornment>
                         ),
                         endAdornment: (
