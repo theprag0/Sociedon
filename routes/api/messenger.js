@@ -193,12 +193,25 @@ const returnRouter = io => {
         const {type} = req.body;
         if(type === 'dm') {
             const {userA, userB, startDate} = req.body;
-            const firstDate = moment(startDate).format('DD-MM-YYYY');
-            const previousDate = moment(startDate).subtract(1, 'day').format('DD-MM-YYYY');
-            
+            const metaData = req.body.metaData ? req.body.metaData : '';
+        
             // Check if DM exists
             const existingDm = await DM.findOne({users: {$size: 2, $all: [userA, userB]}});
+            if(!existingDm) return res.json({msg: 'No existing DM doc'});
 
+            let initialDate;
+            if(existingDm) {
+                if(metaData === 'initial-load') {
+                    initialDate = existingDm.messages[existingDm.messages.length - 1].timestamp;
+                } else {
+                    initialDate = startDate;
+                }
+            }
+            
+            const firstDate = moment(initialDate).format('DD-MM-YYYY');
+            const previousDate = moment(initialDate).subtract(1, 'day').format('DD-MM-YYYY');
+            const dateToStopLoop = moment(initialDate).subtract(2, 'days').format('DD-MM-YYYY');
+        
             // Extract messages from given first and previous date
             // Reverse the messages array since the most recent messages are pushed to the 
             // messages array
@@ -210,16 +223,14 @@ const returnRouter = io => {
                 const msgTimestamp = moment(reverseMessages[i].timestamp).format('DD-MM-YYYY');
                 if(msgTimestamp === firstDate || msgTimestamp === previousDate) {
                     messages.push(reverseMessages[i]);
-                } else {
+                } else if(msgTimestamp === dateToStopLoop) {
                     // Set to true since other messsages from other dates are available
                     unloadedMsgAvailable = true;
                     break;
                 }
             }
-    
-            if(!existingDm) return res.json({msg: 'No existing DM doc'});
+            
             return res.json({messages: [...messages].reverse(), unloadedMsgAvailable});
-            // return res.json({messages: existingDm.messages});
         }
     });
 
