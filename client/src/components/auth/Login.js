@@ -1,6 +1,6 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, { useContext } from 'react';
 import axios from 'axios';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useInputState from '../../hooks/useInputState';
 import { AuthenticationContext } from '../../contexts/auth.context';
 
