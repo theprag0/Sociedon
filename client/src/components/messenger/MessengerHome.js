@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import { MessengerContext } from '../../contexts/messenger.context'; 
 import OnlineUserItem from './OnlineUserItem';
-import getDefaultPicture from '../../helpers/getDefaultPicture';
+import { getAvatar } from '../../helpers/getAvatar';
 import noOnlineFriends from '../../assets/svg/no-online-illus.svg';
 import noRequests from '../../assets/svg/no-requests-illus.svg';
 
@@ -90,7 +90,7 @@ function MessengerHome({userId}) {
                                             <div className="img-container">
                                                 <img 
                                                     className="user-avatar" 
-                                                    src={r.defaultImage ? getDefaultPicture(r.defaultImage) : r.image}
+                                                    src={r.avatar ? getAvatar(r.avatar) : r.image}
                                                     alt="user avatar"
                                                 />
                                             </div>

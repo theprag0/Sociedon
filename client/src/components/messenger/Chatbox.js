@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import MessageInput from './MessageInput';
 import groupMessagesByDate from '../../helpers/groupMessagesByDate';
-import getDefaultPicture from '../../helpers/getDefaultPicture';
+import { getAvatar } from '../../helpers/getAvatar';
 import useTooltipStyles from '../../styles/TooltipStyles';
 import '../../styles/Chatbox.css';
 import chatbox2 from '../../assets/svg/chatbox2.svg';
@@ -26,7 +26,7 @@ function Chatbox({userId}) {
     const [allowScroll, setAllowScroll] = useState(true);
     const tooltipClasses = useTooltipStyles();
 
-    const friendImgSrc = chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : chatboxUser.image;
+    const friendImgSrc = chatboxUser.avatar ? getAvatar(chatboxUser.avatar) : chatboxUser.image;
 
     const msgEndRef = useRef(null);
     const chatboxUserId = useRef(null);
@@ -62,7 +62,7 @@ function Chatbox({userId}) {
                 setConversations(currConvo => {
                     const newConversation = {
                         _id: currChatboxUser._id,
-                        defaultImage: currChatboxUser.defaultImage,
+                        avatar: currChatboxUser.avatar,
                         status: currChatboxUser.status,
                         username: currChatboxUser.username
                     }

@@ -48,7 +48,7 @@ router.get('/user', auth, async (req, res) => {
             username: foundUser.username,
             email: foundUser.email,
             userId: foundUser._id,
-            defaultImage: foundUser.defaultImage
+            avatar: foundUser.avatar
         });
     } catch(err) {
         console.log(err);

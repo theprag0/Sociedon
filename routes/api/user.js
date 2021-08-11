@@ -9,10 +9,11 @@ const User = require('../../models/User');
 // @access Public
 router.post('/register', async (req, res) => {
     try {
-        const {email, username, dob, password} = req.body;
+        const {email, username, dob, password, avatar} = req.body;
 
         // Validate fields
         if(!email || !username || !dob || !password) return res.status(400).json({msg: 'Please enter all fields!'});
+        if(!avatar) return res.status(400).json({msg: 'Please choose an avatar.'});
 
         // Check for existing user
         const existingUser = await User.findOne({email});
@@ -20,7 +21,7 @@ router.post('/register', async (req, res) => {
 
         // Generate date string
         const dobIso = new Date(`${dob}T00:00:00Z`);
-        const newUser = new User({email, username, dob: dobIso, password});
+        const newUser = new User({email, username, dob: dobIso, password, avatar});
 
         // Hash Password
         bcrypt.genSalt(10, (err, salt) => {

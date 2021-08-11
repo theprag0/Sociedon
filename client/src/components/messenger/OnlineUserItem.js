@@ -6,7 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import groupMessagesByDate from '../../helpers/groupMessagesByDate';
-import getDefaultPicture from '../../helpers/getDefaultPicture';
+import { getAvatar } from '../../helpers/getAvatar';
 import useTooltipStyles from '../../styles/TooltipStyles';
 import videoCallIllustration from '../../assets/images/video-call-illus.jpg';
 import voiceCallIllustration from '../../assets/images/voice-call-illus.jpg';
@@ -65,7 +65,7 @@ function OnlineUserItem({userData, userId}) {
                 <div className="img-container">
                     <img 
                         className="user-avatar" 
-                        src={userData.defaultImage ? getDefaultPicture(userData.defaultImage) : userData.image}
+                        src={userData.avatar ? getAvatar(userData.avatar) : userData.image}
                         alt="user avatar"
                     />
                     <p className={userData.status === 'online' ? 'online' : 'offline'}></p>

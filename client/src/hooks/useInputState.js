@@ -1,6 +1,6 @@
 import { useState } from 'react';;
 
-const useInputState = (initialVal, validate = true) => {
+const useInputState = (initialVal, validate = true, type) => {
     const [state, setState] = useState(initialVal);
 
     const handleChange = e => {
@@ -10,7 +10,12 @@ const useInputState = (initialVal, validate = true) => {
                 setState(e.target.value);
             }
         } else {
-            setState(e.target.value);
+            if(type === 'password') {
+                let value = e.target.value;
+                setState(value.replace(/\s/g, ''));
+            } else {
+                setState(e.target.value);
+            }
         }
     }
 

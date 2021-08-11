@@ -98,7 +98,7 @@ const returnRouter = io => {
                     recipientUserData: {
                         _id: recipientUser._id,
                         username: recipientUser.username,
-                        defaultImage: recipientUser.defaultImage
+                        avatar: recipientUser.avatar
                     }
                 });
             } else if(req.body.type === 'requestActions') {
@@ -120,7 +120,7 @@ const returnRouter = io => {
                                     _id: addFriendAInB._id,
                                     username: addFriendAInB.username,
                                     status: addFriendAInB.status,
-                                    defaultImage: addFriendAInB.defaultImage
+                                    avatar: addFriendAInB.avatar
                                 }});
                             });
                         }
@@ -130,7 +130,7 @@ const returnRouter = io => {
                                 _id: addFriendBInA._id,
                                 username: addFriendBInA.username,
                                 status: addFriendBInA.status,
-                                defaultImage: addFriendBInA.defaultImage
+                                avatar: addFriendBInA.avatar
                             }
                         });
                     }
@@ -166,7 +166,7 @@ const returnRouter = io => {
             } else if(req.params.type === 'conversations') {
                 // Send user's conversations/direct messages on connection
                 const userId = req.params.userId;
-                const userDms = await DM.find({users: {$in: userId}}).populate('users', 'username status defaultImage');
+                const userDms = await DM.find({users: {$in: userId}}).populate('users', 'username status avatar');
                 
                 if(userDms && userDms.length > 0) {
                     const userConversations = getUserConversations(userDms, userId);
@@ -180,7 +180,7 @@ const returnRouter = io => {
                 const userId = req.params.userId;
                 const foundRequests = await User.find({friendRequests: {$elemMatch: {from: userId}}}, {
                     username: 1, 
-                    defaultImage: 1
+                    avatar: 1
                 });
                 if(foundRequests) return res.json({requests: foundRequests});
                 return res.json({msg: 'Something went wrong!'});
@@ -250,7 +250,7 @@ const returnRouter = io => {
             const {friendId} = req.body;
             const foundFriend = await User.findOne({_id: friendId}, {
                 username: 1,
-                defaultImage: 1,
+                avatar: 1,
                 status: 1
             });
             if(foundFriend) {

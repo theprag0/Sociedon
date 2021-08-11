@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const getDefaultPicture = require('../helpers/getDefaultPicture');
 
 const userSchema = new Schema(
     {
@@ -19,6 +18,10 @@ const userSchema = new Schema(
         },
         dob: {
             type: Date,
+            required: true
+        },
+        avatar: {
+            type: String,
             required: true
         },
         registeredAt: {
@@ -59,10 +62,6 @@ const userSchema = new Schema(
                 }
             }
         ],
-        defaultImage: {
-            type: String,
-            default: getDefaultPicture()
-        }
     }
 );
 

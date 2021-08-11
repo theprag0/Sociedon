@@ -4,7 +4,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import useTooltipStyles from '../../../styles/TooltipStyles';
-import getDefaultPicture from '../../../helpers/getDefaultPicture';
+import { getAvatar } from '../../../helpers/getAvatar';
 import multimediaIllustration2 from '../../../assets/svg/multimedia-illus-2.svg';
 import fileSharingIllustration from '../../../assets/images/file-sharing-illus.jpg';
 
@@ -31,11 +31,11 @@ function ChatboxInfobar({userData}) {
             <h1 className="chatbox-infobar-headings" style={{paddingBottom: '0.5rem'}}>Members - 2</h1>
             <div className="chatbox-profile-pictures">
                 <span>
-                    <img src={getDefaultPicture(userData.defaultImage)} alt="user profile pic"/>
+                    <img src={getAvatar(userData.avatar)} alt="user profile pic"/>
                     <p>You</p>
                 </span>
                 <img 
-                    src={chatboxUser && chatboxUser.defaultImage ? getDefaultPicture(chatboxUser.defaultImage) : ''} 
+                    src={chatboxUser && chatboxUser.avatar ? getAvatar(chatboxUser.avatar) : ''} 
                     alt="friend profile pic"
                 />
             </div>
