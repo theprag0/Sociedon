@@ -1,19 +1,29 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import axios from 'axios';
 import isDate from 'validator/lib/isDate';
+import isStrongPassword from 'validator/lib/isStrongPassword';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import useInputState from '../../hooks/useInputState';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Button from '@material-ui/core/Button';
+import RegisterForm from './RegisterForm';
+import AvatarPicker from '../utility/AvatarPicker';
 import { withSnackbar } from '../utility/SnackbarHOC';
+import useStyles from '../../styles/RegisterStyles';
 
 function Register(props) {
+    const {isAuthenticated, setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken} = useContext(AuthenticationContext);
     // Handle form input change
     const [email, setEmail, resetEmail] = useInputState('');
     const [username, setUsername, resetUsername] = useInputState('');
-    const [password, setPassword, resetPassword] = useInputState('');
+    const [password, setPassword, resetPassword] = useInputState('', false, 'password');
+    const [confirmPassword, setConfirmPassword, resetConfirmPassword] = useInputState('', false, 'password');
     const [month, setMonth, resetMonth] = useInputState('');
     const [day, setDay, resetDay] = useInputState('');
     const [year, setYear, resetYear] = useInputState('');
-    const {isAuthenticated, setIsAuthenticated, setStatus, setUserData, setUserLoading, setToken} = useContext(AuthenticationContext);
+    const [avatar, setAvatar] = useState('');
 
     // Check if user is already authenticated and redirect back 
     const existingToken = window.localStorage.getItem('token');
@@ -25,18 +35,9 @@ function Register(props) {
         });
     }
 
-    // Date of birth data
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const days = []
-    for(let i = 1; i <= 31; i++) {
-        days.push(<option key={i} value={i < 10 ? `0${i}` : i}>{i}</option>);
-    }
-    const curYear = (new Date()).getFullYear();
-    const years = Array.from(new Array(100),( val, index) => curYear - index);
+    // Form and validate dob string
     let dob = useRef(null);
     let [validDate, setValidDate] = useState(null);
-
-    // Form and validate dob string
     useEffect(() => {
         dob.current = `${year}-${month}-${day}`;
         if((year && day && month) !== '') {
@@ -49,14 +50,38 @@ function Register(props) {
         }
     }, [year, day, month]);
 
+    // Check if password is strong
+    const [validPassword, setValidPassword] = useState(null);
+    useEffect(() => {
+        let checkTimeout;
+        if(password !== '') {
+            checkTimeout = setTimeout(() => {
+                let passwordValidator = isStrongPassword(password);
+                setValidPassword(passwordValidator);
+            }, 600);
+        } else {
+            setValidPassword(null);
+        }
+        return () => clearTimeout(checkTimeout);
+    }, [password]);
 
-    // Error
-    // data: {msg: "User already exists, use a different email."}
+    // Check if confirm password matches password
+    const [passwordMatch, setPasswordMatch] = useState(null);
+    useEffect(() => {
+        let passwordTimeout;
+        if(confirmPassword !== '') {
+            passwordTimeout = setTimeout(() => {
+                if(password === confirmPassword) setPasswordMatch(true);
+                else setPasswordMatch(false);
+            }, 600);
+        } else setPasswordMatch(null);
+        return () => clearTimeout(passwordTimeout);
+    }, [confirmPassword, password]);
 
     // Handle Register Submit
     const handleSubmit = e => {
         e.preventDefault();
-        const body = {email, username, password, dob: dob.current};
+        const body = {email, username, password, dob: dob.current, avatar};
 
         axios.post('/api/user/register', body)
             .then(res => {
@@ -81,65 +106,118 @@ function Register(props) {
         resetEmail();
         resetUsername();
         resetPassword();
+        resetConfirmPassword();
         resetMonth();
         resetDay();
         resetYear();
+        setAvatar('');
+        setActiveStep(0);
     }
 
+    // Form Progress
+    const [activeStep, setActiveStep] = useState(0);
+    const steps = ['Sign Up', 'Finish'];
+    const classes = useStyles();
+
+    const handleStep = e => {
+        e.preventDefault();
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
     return(
-        <div>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="email">Email</label>
-                <input 
-                    type="text"
-                    onChange={setEmail}
-                    value={email}
-                    name="email"
-                    id="email"
-                    placeholder="Eg: test@xyz.com"
-                    required
-                />
-                <label htmlFor="username">Username</label>
-                <input 
-                    type="text"
-                    onChange={setUsername}
-                    value={username}
-                    name="username"
-                    id="username"
-                    placeholder="Enter Username"
-                    required
-                />
-                <label htmlFor="password">Password</label>
-                <input 
-                    type="password"
-                    onChange={setPassword}
-                    value={password}
-                    name="password"
-                    id="password"
-                    placeholder="Enter Password"
-                    required
-                />
-                <label htmlFor="dob">Date Of Birth</label>
-                <select name="month" id="month" onChange={setMonth} defaultValue="Month">
-                    <option disabled>Month</option>
-                    {months.map((month, i) => (
-                        <option key={i} value={i < 9 ? `0${i + 1}` : i + 1}>{month}</option>
-                    ))}
-                </select>
-                <select name="day" id="day" onChange={setDay} defaultValue="Day">
-                    <option disabled>Day</option>
-                    {days}
-                </select>
-                <select name="year" id="year" onChange={setYear} defaultValue="Year">
-                    <option disabled>Year</option>
-                    {years.map(y => (
-                        <option key={y} value={y}>{y}</option>
-                    ))}
-                </select>
-                {(!validDate && validDate !== null) ? 'Choose a valid date' : ''}
-                <button type="submit" disabled={validDate && (email && username && password) !== '' ? false : true}>Sign Up</button>
-            </form>
-        </div>
+        <section className={classes.Register}>
+            <div className={classes.registerForm}>
+                <div className={classes.formHeader}>
+                    <p>Sociedon</p>
+                    <h1>Main Page</h1>
+                </div>
+                <hr className={classes.formHr}/>
+                <h1>Sign Up</h1>
+                <p>
+                    {
+                        activeStep === 0 
+                        ? 'Please, fill up the form below'
+                        : 'Choose your avatar'
+                    }
+                </p>
+                <div className={classes.root}>
+                    <Stepper activeStep={activeStep}>
+                        {steps.map((label, index) => {
+                            const stepProps = {};
+                            const labelProps = {};
+                            return (
+                                <Step key={label} {...stepProps}>
+                                    <StepLabel
+                                        StepIconProps={{classes: {root: classes.icon, active: classes.activeIcon, completed: classes.completedIcon}}} 
+                                        {...labelProps}
+                                    >
+                                        {label}
+                                    </StepLabel>
+                                </Step>
+                            );
+                        })}
+                    </Stepper>
+                </div>
+                <form onSubmit={handleSubmit}>
+                    {
+                        activeStep === 0
+                        ? (
+                            <RegisterForm 
+                                stateFunctions={{
+                                    setEmail, 
+                                    setUsername,
+                                    setPassword,
+                                    setConfirmPassword,
+                                    setDay,
+                                    setMonth,
+                                    setYear,
+                                    handleStep
+                                }}
+                                stateData={{
+                                    email,
+                                    username,
+                                    password,
+                                    confirmPassword,
+                                    month,
+                                    day,
+                                    year,
+                                    validPassword,
+                                    passwordMatch,
+                                    validDate
+                                }}
+                            />
+                        )
+                        : (
+                            <AvatarPicker
+                                setAvatar={setAvatar} 
+                                avatar={avatar}
+                                activeStep={activeStep}
+                            /> 
+                        )
+                    }
+                    <Button 
+                        style={{
+                            display: activeStep === 0 ? 'none' : 'block', 
+                        }} 
+                        type="submit"
+                        className={classes.submitBtn}
+                        size="small"
+                        variant="outlined"
+                        disabled={
+                            avatar !== ''
+                            && validDate 
+                            && (email && username && password) !== '' 
+                            && validPassword
+                            && passwordMatch
+                            ? false : true
+                        }
+                    >
+                        SIGN UP
+                    </Button>
+                </form>
+            </div>
+            <div className={classes.RegisterFiller}></div>
+        </section>
     );
 }
 

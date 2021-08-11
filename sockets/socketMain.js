@@ -2,7 +2,7 @@ const User = require('../models/User');
 const DM = require('../models/DM');
 
 async function socketMain(io, socket, userId) {
-    const currUser = await User.findById({_id: userId}, {friends: 1}).populate('friends', 'username status defaultImage');
+    const currUser = await User.findById({_id: userId}, {friends: 1}).populate('friends', 'username status avatar');
     // Send user's friends on connection
     socket.emit('friendsList', {friends: currUser.friends});
 

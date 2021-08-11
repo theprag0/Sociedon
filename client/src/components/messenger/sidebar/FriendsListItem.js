@@ -4,7 +4,7 @@ import moment from 'moment';
 import { AuthenticationContext } from '../../../contexts/auth.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import groupMessagesByDate from '../../../helpers/groupMessagesByDate';
-import getDefaultPicture from '../../../helpers/getDefaultPicture';
+import { getAvatar } from '../../../helpers/getAvatar';
 
 function FriendsListItem({userData, selected, userId}) {
     const {setCurrentBody, setChatboxUser, setChatboxLoading} = useContext(MessengerContext);
@@ -49,7 +49,7 @@ function FriendsListItem({userData, selected, userId}) {
             <div className="img-container">
                 <img 
                     className="user-avatar" 
-                    src={userData.defaultImage ? getDefaultPicture(userData.defaultImage) : userData.image}
+                    src={userData.avatar ? getAvatar(userData.avatar) : userData.image}
                     alt="user avatar"
                 />
                 <p className={userData.status === 'online' ? 'online' : 'offline'}></p>

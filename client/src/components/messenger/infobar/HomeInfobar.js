@@ -1,14 +1,14 @@
 import React from 'react';
 import Search from '../Search';
 import FriendsListItem from '../sidebar/FriendsListItem';
-import getDefaultPicture from '../../../helpers/getDefaultPicture';
+import { getAvatar } from '../../../helpers/getAvatar';
 import friendsIllustration from '../../../assets/svg/friends-illus.svg';
 
 function HomeInfobar({userData, userId, friends}) {
     return (
         <>
             <img 
-                src={userData && userData.defaultImage ? getDefaultPicture(userData.defaultImage) : ''} 
+                src={userData && userData.avatar ? getAvatar(userData.avatar) : ''} 
                 className="Infobar-profile-pic"
                 alt="user profile pic"
             />
