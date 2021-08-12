@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const cloudinary = require('../../utils/cloudinary');
 const User = require('../../models/User');
+
 
 // @route POST /api/user/registered
 // @desc Register new User
 // @access Public
 router.post('/register', async (req, res) => {
     try {
-        const {email, username, dob, password, avatar} = req.body;
+        const {email, username, dob, password, avatar, avatarType} = req.body;
 
         // Validate fields
         if(!email || !username || !dob || !password) return res.status(400).json({msg: 'Please enter all fields!'});
@@ -21,7 +23,24 @@ router.post('/register', async (req, res) => {
 
         // Generate date string
         const dobIso = new Date(`${dob}T00:00:00Z`);
-        const newUser = new User({email, username, dob: dobIso, password, avatar});
+        const newUser = new User({email, username, dob: dobIso, password});
+
+        if(avatarType === 'customAvatar') {
+            const uploadAvatar = await cloudinary.uploader.upload(avatar, {
+                upload_preset: 'sociedon'
+            });
+            if(uploadAvatar && Object.keys(uploadAvatar).length > 0) {
+                newUser.avatar = {
+                    avatarId: uploadAvatar.public_id,
+                    avatarType
+                }
+            }
+        } else {
+            newUser.avatar = {
+                avatarId: avatar,
+                avatarType
+            }
+        }
 
         // Hash Password
         bcrypt.genSalt(10, (err, salt) => {

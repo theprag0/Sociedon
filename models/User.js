@@ -21,8 +21,14 @@ const userSchema = new Schema(
             required: true
         },
         avatar: {
-            type: String,
-            required: true
+            avatarId: {
+                type: String, 
+                required: true
+            },
+            avatarType: {
+                type: String,
+                required: true
+            }
         },
         registeredAt: {
             type: Date,

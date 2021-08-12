@@ -31,6 +31,7 @@ function RegisterForm({stateFunctions, stateData}) {
         month,
         day,
         year,
+        validEmail,
         validPassword,
         passwordMatch,
         validDate
@@ -49,7 +50,6 @@ function RegisterForm({stateFunctions, stateData}) {
     }
 
     const handleClickShowPassword = e => {
-        console.log(e.currentTarget.title);
         if(e.currentTarget.title === 'password') {
             setShowPassword(currState => !currState);
         } else {
@@ -74,9 +74,19 @@ function RegisterForm({stateFunctions, stateData}) {
                 label="Email"
                 autoComplete="off"
                 InputProps={{
-                    className: classes.inputField
+                    className: classes.inputField,
+                    style: {marginBottom: validEmail || validEmail === null ? '1.3rem' : '0'}
                 }}
                 size="small"
+                helperText={
+                    validEmail || validEmail === null 
+                    ? "" 
+                    : "Please enter a valid email address"
+                }
+                FormHelperTextProps={{
+                    style: {padding: 0, marginBottom: '1rem'}
+                }}
+                error={validEmail || validEmail === null ? false : true}
                 required
             />
             <TextField 
@@ -257,6 +267,7 @@ function RegisterForm({stateFunctions, stateData}) {
                 disabled={
                     validDate 
                     && (email && username && password) !== '' 
+                    && validEmail
                     && validPassword
                     && passwordMatch
                     ? false 

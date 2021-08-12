@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { Image } from 'cloudinary-react';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
@@ -12,7 +13,7 @@ function ChatboxInfobar({userData}) {
     const {chatboxUser} = useContext(MessengerContext);
     const [tooltipIsOpen, setTooltipIsOpen] = useState({btn1: false, btn2: false});
     const tooltipClasses = useTooltipStyles();
-
+    console.log(chatboxUser)
     const handleTooltipClose = () => {
         setTooltipIsOpen({btn1: false, btn2: false});
     };
@@ -31,18 +32,34 @@ function ChatboxInfobar({userData}) {
             <h1 className="chatbox-infobar-headings" style={{paddingBottom: '0.5rem'}}>Members - 2</h1>
             <div className="chatbox-profile-pictures">
                 <span>
-                    <img src={getAvatar(userData.avatar)} alt="user profile pic"/>
+                    {
+                        userData.avatar && userData.avatar.avatarType === 'defaultAvatar'
+                        ? <img src={getAvatar(userData.avatar.avatarId)} alt="user profile pic"/>
+                        : <Image 
+                            cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                            publicId={userData.avatar && userData.avatar.avatarId}
+                            alt="user profile pic"
+                        />
+                    }
                     <p>You</p>
                 </span>
-                <img 
-                    src={chatboxUser && chatboxUser.avatar ? getAvatar(chatboxUser.avatar) : ''} 
-                    alt="friend profile pic"
-                />
+                {
+                    chatboxUser && chatboxUser.avatar && chatboxUser.avatar.avatarType === 'defaultAvatar'    
+                    ? <img 
+                        src={getAvatar(chatboxUser.avatar.avatarId)} 
+                        alt="friend profile pic"
+                    />
+                    : <Image 
+                        cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                        publicId={chatboxUser.avatar && chatboxUser.avatar.avatarId}
+                        alt="friend profile pic"
+                    />
+                }
             </div>
             <hr className="Infobar-hr"/>
             <div className="multimedia">
                 <h1 className="chatbox-infobar-headings">Photos & Multimedia</h1>
-                <img src={multimediaIllustration2}/>
+                <img src={multimediaIllustration2} alt="file sharing"/>
                 <p>Start sharing images and videos 🤳</p>
                 <ClickAwayListener onClickAway={handleTooltipClose}>
                     <Tooltip

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
+import { Image } from 'cloudinary-react';
 import { MessengerContext } from '../../contexts/messenger.context';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -63,11 +64,19 @@ function OnlineUserItem({userData, userId}) {
         <li className='FriendsListItem MessengerHome-item' onClick={handleClick}>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <div className="img-container">
-                    <img 
-                        className="user-avatar" 
-                        src={userData.avatar ? getAvatar(userData.avatar) : userData.image}
-                        alt="user avatar"
-                    />
+                    {
+                        userData.avatar && userData.avatar.avatarType === 'defaultAvatar'
+                        ? <img 
+                            className="user-avatar" 
+                            src={getAvatar(userData.avatar.avatarId)}
+                            alt="user avatar"
+                        />
+                        : <Image 
+                            cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                            publicId={userData.avatar && userData.avatar.avatarId}
+                            className="user-avatar"
+                        />
+                    }
                     <p className={userData.status === 'online' ? 'online' : 'offline'}></p>
                 </div>
                 <p>{userData.username}</p>

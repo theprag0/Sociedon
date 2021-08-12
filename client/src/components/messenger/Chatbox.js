@@ -2,6 +2,7 @@ import React, { useContext, useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { Image } from 'cloudinary-react';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
@@ -25,8 +26,6 @@ function Chatbox({userId}) {
     const [msgLoading, setMsgLoading] = useState(false);
     const [allowScroll, setAllowScroll] = useState(true);
     const tooltipClasses = useTooltipStyles();
-
-    const friendImgSrc = chatboxUser.avatar ? getAvatar(chatboxUser.avatar) : chatboxUser.image;
 
     const msgEndRef = useRef(null);
     const chatboxUserId = useRef(null);
@@ -214,11 +213,19 @@ function Chatbox({userId}) {
                                 !chatboxLoading ?
                                 (
                                     <>
-                                        <img 
-                                            className="user-avatar" 
-                                            src={friendImgSrc}
-                                            alt="user avatar"
-                                        />
+                                        {
+                                            chatboxUser.avatar && chatboxUser.avatar.avatarType === 'defaultAvatar'
+                                            ? <img 
+                                                className="user-avatar" 
+                                                src={getAvatar(chatboxUser.avatar.avatarId)}
+                                                alt="user avatar"
+                                            />
+                                            : <Image 
+                                                cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                                                publicId={chatboxUser.avatar && chatboxUser.avatar.avatarId}
+                                                className="user-avatar"
+                                            />
+                                        }
                                         <p className={chatboxUser.status === 'offline' ? 'offline' : 'online'}></p>
                                     </>
                                 ) : ''
@@ -324,7 +331,21 @@ function Chatbox({userId}) {
                                             } 
                                             return (
                                                 <span key={m._id ? m._id : uuidv4()}>
-                                                    <img style={{borderRadius: '50%'}} src={friendImgSrc} alt="profile pic" className="img-container"/>
+                                                    {
+                                                        chatboxUser.avatar && chatboxUser.avatar.avatarType === 'defaultAvatar'
+                                                        ? <img 
+                                                            style={{borderRadius: '50%'}} 
+                                                            src={getAvatar(chatboxUser.avatar.avatarId)} 
+                                                            alt="profile pic" 
+                                                            className="img-container"
+                                                        />
+                                                        : <Image 
+                                                            cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                                                            publicId={chatboxUser.avatar && chatboxUser.avatar.avatarId}
+                                                            className="img-container"
+                                                            style={{borderRadius: '50%'}}
+                                                        />
+                                                    }
                                                     <li className="they">
                                                         {m.message}
                                                     </li>
