@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { Image } from 'cloudinary-react';
 import { AuthenticationContext } from '../../contexts/auth.context';
 import { MessengerContext } from '../../contexts/messenger.context'; 
 import OnlineUserItem from './OnlineUserItem';
@@ -88,11 +89,20 @@ function MessengerHome({userId}) {
                                     {sentRequests.map(r => (
                                         <li key={r._id} className="sent-requests">
                                             <div className="img-container">
-                                                <img 
-                                                    className="user-avatar" 
-                                                    src={r.avatar ? getAvatar(r.avatar) : r.image}
-                                                    alt="user avatar"
-                                                />
+                                                {
+                                                    r.avatar && r.avatar.avatarType === 'defaultAvatar'
+                                                    ? <img 
+                                                        className="user-avatar" 
+                                                        src={r.avatar ? getAvatar(r.avatar) : r.image}
+                                                        alt="user avatar"
+                                                    />
+                                                    : <Image 
+                                                        cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                                                        publicId={r.avatar && r.avatar.avatarId}
+                                                        className="user-avatar"
+                                                        alt="user avatar"
+                                                    />
+                                                }
                                             </div>
                                             <p>{r.username}</p>
                                             <p>Friend Request Sent</p>

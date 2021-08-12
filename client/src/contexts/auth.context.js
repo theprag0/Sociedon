@@ -18,7 +18,7 @@ export function AuthenticationProvider(props) {
             }
         };
         if(token) config.headers['x-auth-token'] = token;
-
+        setUserLoading(true);
         axios.get('/api/auth/user', config)
             .then(res => {
                 setIsAuthenticated(true);

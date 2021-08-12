@@ -12,13 +12,13 @@ import findFriends from '../../../assets/images/friends-chat2.png';
 import search from '../../../assets/svg/search.svg';
 
 function Sidebar({userId}) {
-    const {token} = useContext(AuthenticationContext);
+    const {token, userData} = useContext(AuthenticationContext);
     const {socket} = useContext(SocketContext);
     const {chatboxUser, conversations, setConversations, friends} = useContext(MessengerContext);
     const [searchQuery, setSearchQuery, resetSearchQuery] = useInputState('', false);
     const [searchResult, setSearchResult] = useState([]);
     const [searchBarIsOpen, setSearchBarIsOpen] = useState(false);
-
+    console.log(userData);
     // Load user's conversations/direct messages
     useEffect(() => {
         const config = {

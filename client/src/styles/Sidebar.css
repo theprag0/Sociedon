@@ -60,9 +60,9 @@
 	letter-spacing: 0;
 	border-bottom: 1px solid rgba(204, 204, 204, 0.3);
 }
-.FriendsListItem img {
+/* .FriendsListItem img {
 	padding-right: 0.8rem;
-}
+} */
 .FriendsListItem:hover {
 	background-color: #eee;
 }

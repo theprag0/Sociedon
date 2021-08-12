@@ -20,10 +20,16 @@ const useStyles = makeStyles((theme) => ({
     RegisterFiller: {
         width: "65%",
 	    height: "100%",
+        float: 'right',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
     },
     registerForm: {
         width: "35%",
         height: "100%",
+        float: 'left',
         backgroundColor: "#fff",
         borderTopRightRadius: "35px",
         borderBottomRightRadius: "35px",
@@ -60,6 +66,11 @@ const useStyles = makeStyles((theme) => ({
             fontFamily: "'Nunito', sans-serif",
             textTransform: 'uppercase',
             letterSpacing: '1px',
+        },
+        "& p": {
+            fontFamily: "'Knewave', cursive",
+            color: '#4849a1',
+            letterSpacing: '1px'
         }
     },
     icon:{
@@ -80,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     selectField: {
         marginRight: '10px',
         marginBottom: '10px',
-        borderRadius: '12px'
+        borderRadius: '12px',
     },
     inputField: {
         borderRadius: '12px',
@@ -251,6 +262,54 @@ const useStyles = makeStyles((theme) => ({
                 }
             }
         }
+    },
+    filename: {
+        margin: 0,
+        paddingBottom: '0 !important',
+        textTransform: 'none !important',
+        color: '#99A1B7 !important'
+    },
+    infoPaper: {
+        marginBottom: '10%',
+        width: '60%',
+        display: 'flex',
+        borderRadius: '12px',
+        boxShadow: "0px 6px 17px 2px rgba(0,0,0,0.55)",
+        WebkitBoxShadow: "0px 6px 17px 2px rgba(0,0,0,0.55)",
+        MozBoxShadow: "0px 6px 17px 2px rgba(0,0,0,0.55)",
+    },
+    fillerIcon: {
+        width: '20%', 
+        backgroundColor: '#F3F3F3', 
+        textAlign: 'center', 
+        borderTopLeftRadius: '12px',
+        borderBottomLeftRadius: '12px',
+    },
+    fillerText: {
+        fontFamily: "'Montserrat', sans-serif",
+        padding: '1rem',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        "& h1": {
+            fontSize: '15px',
+            letterSpacing: '1px'
+        },
+        "& p": {
+            fontSize: '13px',
+            paddingTop: '5px',
+            letterSpacing: '1px'
+        }
+    },
+    fillerStepper: {
+        width: '80%',
+        // margin: '0 auto',
+        marginTop: '10px',
+        backgroundColor: 'transparent',
+        justifyContent: 'center'
+    },
+    selectScroll: {
+    
     }
 }));
 

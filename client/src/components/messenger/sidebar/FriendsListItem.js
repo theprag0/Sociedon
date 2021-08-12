@@ -1,6 +1,7 @@
 import React, { useContext, useRef } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import { Image } from 'cloudinary-react';
 import { AuthenticationContext } from '../../../contexts/auth.context';
 import { MessengerContext } from '../../../contexts/messenger.context';
 import groupMessagesByDate from '../../../helpers/groupMessagesByDate';
@@ -9,7 +10,7 @@ import { getAvatar } from '../../../helpers/getAvatar';
 function FriendsListItem({userData, selected, userId}) {
     const {setCurrentBody, setChatboxUser, setChatboxLoading} = useContext(MessengerContext);
     const {token} = useContext(AuthenticationContext);
-
+    
     const handleClick = e => {
         setCurrentBody('chatbox');
         setChatboxLoading(true);
@@ -47,11 +48,19 @@ function FriendsListItem({userData, selected, userId}) {
     return (
         <li className={`FriendsListItem ${selected ? 'selected' : ''}`} onClick={handleClick}>
             <div className="img-container">
-                <img 
-                    className="user-avatar" 
-                    src={userData.avatar ? getAvatar(userData.avatar) : userData.image}
-                    alt="user avatar"
-                />
+                {
+                    userData.avatar && userData.avatar.avatarType === 'defaultAvatar'
+                    ? <img 
+                        className="user-avatar" 
+                        src={getAvatar(userData.avatar.avatarId)}
+                        alt="user avatar"
+                    />
+                    : <Image 
+                        cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                        publicId={userData.avatar && userData.avatar.avatarId}
+                        className="user-avatar"
+                    />
+                }
                 <p className={userData.status === 'online' ? 'online' : 'offline'}></p>
             </div>
             <div className="friend-info">

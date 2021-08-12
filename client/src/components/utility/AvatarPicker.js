@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import ImageList from '@material-ui/core/ImageList';
@@ -7,15 +7,38 @@ import Slide from '@material-ui/core/Slide';
 import { avatars } from '../../helpers/getAvatar';
 import useStyles from '../../styles/RegisterStyles';
 
-function AvatarPicker({setAvatar, avatar, activeStep}) {
+function AvatarPicker({setAvatar, avatar, setEncodedAvatar, encodedAvatar, activeStep}) {
     const classes = useStyles();
+    const hiddenFileInput = useRef(null);
 
     const handleAvatarClick = e => {
         if(avatar === e.currentTarget.title) {
             setAvatar('');
         } else {
+            if(encodedAvatar.avatarUrl !== '') setEncodedAvatar({});
             setAvatar(e.currentTarget.title);
         }
+    }
+
+    const handleAvatarInputChange = e => {
+        const file = e.currentTarget.files[0];
+        generateEncodedAvatar(file);
+    }
+
+    const generateEncodedAvatar = file => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+            if(avatar !== '') setAvatar('');
+            setEncodedAvatar({
+                avatarUrl: reader.result,
+                avatarFileName: file.name
+            });
+        }
+    }
+
+    const handleFileInputClick = () => {
+        hiddenFileInput.current.click();
     }
 
     return (
@@ -49,15 +72,20 @@ function AvatarPicker({setAvatar, avatar, activeStep}) {
                     <Button
                         variant="contained"
                         size="small"
+                        type="button"
                         className={classes.btn}
                         style={{marginTop: 0, padding: '4px', backgroundColor: '#f95959'}}
+                        onClick={handleFileInputClick}
                     >
                         Upload Image
-                        <input
-                            type="file"
-                            hidden
-                        />
                     </Button>
+                    <input
+                        type="file"
+                        ref={hiddenFileInput}
+                        style={{display: 'none'}}
+                        onChange={handleAvatarInputChange}
+                    />
+                    <p className={classes.filename}>{encodedAvatar && encodedAvatar.avatarFileName}</p>
                 </div>
             </FormGroup>
         </Slide>
