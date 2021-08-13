@@ -20,7 +20,7 @@ const returnRouter = io => {
             if (type === 'friends') {
                 const foundUsers = await User.find(
                     {username: new RegExp(query, 'i'), _id: {$nin: req.user.id}}, 
-                    {username: 1, _id: 1, friendRequests: 1},
+                    {username: 1, _id: 1, friendRequests: 1, avatar: 1},
                     {new: true}
                 ).populate("friendRequests");
                 
@@ -42,11 +42,11 @@ const returnRouter = io => {
                     if(f.friendRequests.length > 0) {
                         for(r of f.friendRequests) {
                             if(r.from.equals(req.user.id)) {
-                                return {username: f.username, _id: f._id, sent: true}
+                                return {username: f.username, _id: f._id, avatar: f.avatar, sent: true}
                             } 
                         }
                     }
-                    return {username: f.username, _id: f._id};
+                    return {username: f.username, _id: f._id, avatar: f.avatar};
                 });
                 if(mapResponse.length === 0) return res.json({result: [{msg: 'No users found!'}]}); 
                 // Return found users
