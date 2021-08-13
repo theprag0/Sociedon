@@ -42,7 +42,7 @@ function AvatarPicker({setAvatar, avatar, setEncodedAvatar, encodedAvatar, activ
     }
 
     return (
-        <Slide direction="right" in={activeStep === 1} timeout={600}>
+        <Slide direction="right" in={activeStep === 2} timeout={600}>
             <FormGroup className={classes.imageListRoot}>
                 <ImageList rowHeight={80} cols={5} className={classes.imageList}>
                     {avatars.map(avt => (

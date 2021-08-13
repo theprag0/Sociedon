@@ -2,8 +2,12 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const moment = require('moment');
+const { customAlphabet } = require('nanoid');
 const cloudinary = require('../../utils/cloudinary');
 const User = require('../../models/User');
+const OTP = require('../../models/OTP');
+const emailServer = require('../../utils/sendEmail');
 
 
 // @route POST /api/user/registered
@@ -68,6 +72,111 @@ router.post('/register', async (req, res) => {
     } catch(err) {
         console.log(err);
         res.status(500).json({msg: 'Something went wrong, Please try again later'});
+    }
+});
+
+// @route POST /register/verify
+// @desc Verify user email with OTP
+// @access Public
+router.post('/register/verify', async (req, res) => {
+    try{
+        if(req.body.type === 'generateOtp') {
+            const {email} = req.body;
+            const otp = customAlphabet('0123456789', 6);
+            
+            // Check if user already has an OTP allocated
+            const foundOtp = await OTP.findOne({recipientEmail: email});
+            if(foundOtp && foundOtp.generatedOtpNum < 3) {
+                console.log('generate again')
+                const updateOtp = await OTP.findOneAndUpdate({recipientEmail: email}, {
+                    $set: {
+                        generatedOtp: otp(), 
+                        generatedOtpNum: foundOtp.generatedOtpNum + 1, 
+                        incorrectAttempts: 0,
+                        createdAt: Date.now()
+                    }
+                }, {new: true});
+                if(updateOtp) {
+                    const response = await emailServer.sendOtpVerification(updateOtp.recipientEmail, updateOtp.generatedOtp);
+                    if(response.accepted && response.accepted.length > 0) {
+                        return res.json({
+                            status: 'success', 
+                            msg: 'OTP was sent to your email successfully',
+                            generatedOtpNum: updateOtp.generatedOtpNum
+                        });
+                    } 
+                    return res.json({status: 'error', msg: "Couldn't send OTP, Please try again"});
+                }
+            } else if(foundOtp && foundOtp.generatedOtpNum >= 3) {
+                const currDate = moment(Date.now());
+                const otpCreatedAt = moment(foundOtp.createdAt);
+                const duration = moment.duration(currDate.diff(otpCreatedAt)).asHours();
+                
+                if(Math.round(duration) >= 24) {
+                    const updateOtp = await OTP.findOneAndUpdate({recipientEmail: email}, {
+                        $set: {
+                            generatedOtp: otp(), 
+                            generatedOtpNum: 1, 
+                            incorrectAttempts: 0,
+                            createdAt: Date.now()
+                        }
+                    }, {new: true});
+                    if(updateOtp) {
+                        const response = await emailServer.sendOtpVerification(updateOtp.recipientEmail, updateOtp.generatedOtp);
+                        if(response.accepted && response.accepted.length > 0) {
+                            return res.json({
+                                status: 'success', 
+                                msg: 'OTP was sent to your email successfully',
+                                generatedOtpNum: updateOtp.generatedOtpNum
+                            });
+                        } 
+                        return res.json({status: 'error', msg: "Couldn't send OTP, Please try again"});
+                    }
+                }
+                return res.json({status: 'warning', msg: "You can't resend OTP with this email for 24 hours."});
+            }
+
+            // save otp 
+            console.log('first time')
+            const newOtpDoc = new OTP({recipientEmail: email, generatedOtp: otp()});
+            const saveOtp = await newOtpDoc.save();
+            if(saveOtp) {
+                const response = await emailServer.sendOtpVerification(saveOtp.recipientEmail, saveOtp.generatedOtp);
+                if(response.accepted && response.accepted.length > 0) {
+                    return res.json({
+                        status: 'success', 
+                        msg: 'OTP was sent to your email successfully',
+                        generatedOtpNum: saveOtp.generatedOtpNum
+                    });
+                }
+                return res.json({status: 'error', msg: "Couldn't send OTP, Please try again"});
+            }
+        } else {
+            const {email, otp} = req.body;
+            // Check if otp matches
+            const foundOtp = await OTP.findOne({recipientEmail: email});
+            const currDate = moment(Date.now());
+            const otpCreatedAt = moment(foundOtp.createdAt);
+            const duration = moment.duration(currDate.diff(otpCreatedAt)).asMinutes();
+
+            if(foundOtp.generatedOtp === otp && foundOtp.incorrectAttempts < 3 && Math.round(duration) < 11) {
+                const deleteOtpDoc = await OTP.findOneAndDelete({recipientEmail: email});
+                if(deleteOtpDoc) return res.json({status: 'success', msg: 'OTP verified 👍'});
+            } else if(foundOtp.incorrectAttempts >= 3 || Math.round(duration) >= 11) {
+                const updateOtpDoc = await OTP.findOneAndUpdate({recipientEmail: email}, {$set: {
+                    generatedOtp: '',
+                    incorrectAttempts: 0
+                }});
+                if(updateOtpDoc) return res.json({status: 'warning', msg: 'Your OTP has expired, please try again.'});
+            }
+            await OTP.findOneAndUpdate({recipientEmail: email}, {$set: {
+                incorrectAttempts: foundOtp.incorrectAttempts + 1
+            }});
+            return res.json({status: 'error', msg: 'Incorrect OTP 🙁'});
+        }
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json({msg: err});
     }
 });
 

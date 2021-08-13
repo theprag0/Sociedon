@@ -3,9 +3,10 @@ import authBackground from '../assets/images/auth-background.png';
 import avatarPickerBg from '../assets/images/avatar-picker-bg.jpg';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
+    stepperRoot: {
       padding: '0 1rem',
-      paddingRight: '10rem',
+      paddingRight: '6rem',
+      paddingBottom: '0.5rem',
       margin: 0,
     },
     Register: {
@@ -125,6 +126,9 @@ const useStyles = makeStyles((theme) => ({
         padding: '10px',
         color: '#fff',
         cursor: 'pointer',
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 600,
+        letterSpacing: '2px',
         '&:disabled': {
             backgroundColor: 'rgba(72, 73, 161, 0.7)',
             color: '#fff',
@@ -308,8 +312,52 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'transparent',
         justifyContent: 'center'
     },
-    selectScroll: {
-    
+    otpForm: {
+        padding: '0 3rem',
+        "& p": {
+            padding: 0,
+            paddingBottom: '2rem',
+            "& button": {
+                backgroundColor: 'transparent',
+                color: '#f95959',
+                fontFamily: "'Nunito', sans-serif",
+                fontWeight: 600,
+                letterSpacing: '1px',
+                border: 'none',
+                borderBottom: '2px solid #f95959',
+                outline: 'none',
+                marginRight: '1rem',
+                cursor: 'pointer',
+                "&:disabled": {
+                    color: 'rgba(249, 89, 89, 0.5)',
+                    borderBottom: '2px solid rgba(249, 89, 89, 0.5)',
+                    cursor: 'default'
+                }
+            }
+        }
+    },
+    otpInput: {
+        width: '100%',
+        paddingBottom: '1.5rem'
+    },
+    otpInfo: {
+        marginTop: '2.5rem',
+        backgroundColor: 'rgba(249, 89, 89, 0.9)',
+        color: '#fff',
+        borderRadius: '15px',
+        padding: '10px',
+        paddingLeft: '2rem',
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 600,
+        "& li": {
+           letterSpacing: '2px',
+           fontSize: '13px',
+           paddingBottom: '7px',
+           "&:first-child": {
+               fontSize: '17px',
+               paddingBottom: '5px'
+           } 
+        }
     }
 }));
 

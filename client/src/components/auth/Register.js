@@ -13,6 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Slide from '@material-ui/core/Slide';
 import RegisterForm from './RegisterForm';
+import OTPForm from './OTPForm';
 import AvatarPicker from '../utility/AvatarPicker';
 import { withSnackbar } from '../utility/SnackbarHOC';
 import useStyles from '../../styles/RegisterStyles';
@@ -32,6 +33,7 @@ function Register(props) {
     const [year, setYear, resetYear] = useInputState('');
     const [avatar, setAvatar] = useState('');
     const [encodedAvatar, setEncodedAvatar] = useState({});
+    const [emailVerified, setEmailVerified] = useState(false);
 
     // Check if user is already authenticated and redirect back 
     const existingToken = window.localStorage.getItem('token');
@@ -151,11 +153,10 @@ function Register(props) {
 
     // Form Progress
     const [activeStep, setActiveStep] = useState(0);
-    const steps = ['Sign Up', 'Finish'];
+    const steps = ['Sign Up', 'Verify', 'Finish'];
     const classes = useStyles();
 
     const handleStep = e => {
-        e.preventDefault();
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
@@ -190,10 +191,12 @@ function Register(props) {
                     {
                         activeStep === 0 
                         ? 'Please, fill up the form below'
-                        : 'Choose your avatar'
+                        : activeStep === 1
+                            ? 'Verify your email'
+                            : 'Choose your avatar'
                     }
                 </p>
-                <div className={classes.root}>
+                <div className={classes.stepperRoot}>
                     <Stepper activeStep={activeStep}>
                         {steps.map((label, index) => {
                             const stepProps = {};
@@ -239,21 +242,32 @@ function Register(props) {
                                     passwordMatch,
                                     validDate
                                 }}
+                                snackbarShowMessage={props.snackbarShowMessage}
                             />
                         )
-                        : (
-                            <AvatarPicker
-                                setAvatar={setAvatar} 
-                                setEncodedAvatar={setEncodedAvatar}
-                                avatar={avatar}
-                                encodedAvatar={encodedAvatar}
-                                activeStep={activeStep}
-                            /> 
-                        )
+                        : activeStep === 1 
+                            ? (
+                                <OTPForm 
+                                    stateData={{email}}
+                                    handleStep={handleStep}
+                                    snackbarShowMessage={props.snackbarShowMessage}
+                                    setEmailVerified={setEmailVerified}
+                                    activeStep={activeStep}
+                                />
+                            )
+                            : (
+                                <AvatarPicker
+                                    setAvatar={setAvatar} 
+                                    setEncodedAvatar={setEncodedAvatar}
+                                    avatar={avatar}
+                                    encodedAvatar={encodedAvatar}
+                                    activeStep={activeStep}
+                                /> 
+                            )
                     }
                     <Button 
                         style={{
-                            display: activeStep === 0 ? 'none' : 'block', 
+                            display: activeStep === 0 || activeStep === 1 ? 'none' : 'block', 
                             backgroundColor: userLoading ? '#4849a1' : '',
                             marginTop: encodedAvatar && encodedAvatar.avatarFileName !== '' ? '0.5rem' : '0.9rem'
                         }} 
@@ -268,6 +282,7 @@ function Register(props) {
                             && validEmail
                             && validPassword
                             && passwordMatch
+                            && emailVerified
                             ? false : true
                         }
                     >

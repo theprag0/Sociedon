@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
 import FormGroup from '@material-ui/core/FormGroup';
 import TextField from '@material-ui/core/TextField';
@@ -11,8 +13,9 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import InputLabel from '@material-ui/core/InputLabel';
 import useStyles from '../../styles/RegisterStyles';
+import loader from '../../assets/svg/transparent-loader.svg';
 
-function RegisterForm({stateFunctions, stateData}) {
+function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
     const {
         setEmail, 
         setUsername,
@@ -38,6 +41,7 @@ function RegisterForm({stateFunctions, stateData}) {
     } = stateData;
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [submittingForm, setSubmittingForm] = useState(false);
     const classes = useStyles();
 
     // Date of birth data
@@ -60,6 +64,18 @@ function RegisterForm({stateFunctions, stateData}) {
     const handleMouseDownPassword = evt => {
         evt.preventDefault();
     };
+
+    // Handle form submission
+    const handleClick = e => {
+        e.preventDefault();
+        setSubmittingForm(true);
+        axios.post('/api/user/register/verify', {email, type: 'generateOtp'})
+            .then(res => {
+                handleStep();
+                setSubmittingForm(false);
+                snackbarShowMessage(res.data.msg, 'success');
+            }).catch(err => console.log(err));
+    }
 
     return (
         <FormGroup className={classes.registerFormGroup}>
@@ -263,7 +279,7 @@ function RegisterForm({stateFunctions, stateData}) {
             </p>
             <button 
                 type="button" 
-                onClick={handleStep}
+                onClick={handleClick}
                 disabled={
                     validDate 
                     && (email && username && password) !== '' 
@@ -275,8 +291,24 @@ function RegisterForm({stateFunctions, stateData}) {
                 }
                 className={classes.btn}
             >
-                Continue
+                {
+                    !submittingForm
+                    ? 'Continue'
+                    : <img src={loader} alt="loader gif" style={{width: '1.5rem', height: '1.2rem', paddingTop: '4px'}}/>
+                }
             </button>
+            <p style={{padding: 0, paddingTop: '10px'}}>
+                Already have an account? 
+                <Link to="/login" style={{
+                    fontFamily: "'Montserrat', sans-serif", 
+                    color: '#f95959', 
+                    fontWeight: 600,
+                    paddingLeft: '10px',
+                    letterSpacing: '1px'
+                }}>
+                    Login
+                </Link>
+            </p>
         </FormGroup>
     );
 }
