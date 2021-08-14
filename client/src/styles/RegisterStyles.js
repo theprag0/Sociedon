@@ -93,16 +93,44 @@ const useStyles = makeStyles((theme) => ({
         marginRight: '10px',
         marginBottom: '10px',
         borderRadius: '12px',
+        '&$focused $notchedOutline': {
+            border: '2px solid #f95959'
+        },
+        "&:hover:not($disabled):not($focused):not($error) $notchedOutline": {
+            border: '1px solid #f95959'
+        }
     },
     inputField: {
         borderRadius: '12px',
         width: '80%',
-        marginBottom: '1.3rem'
+        marginBottom: '1.3rem',
+        '&$focused $notchedOutline': {
+            border: '2px solid #f95959'
+        },
+        "&:hover:not($disabled):not($focused):not($error) $notchedOutline": {
+            border: '1px solid #f95959'
+        }
+    },
+    focused: {},
+    notchedOutline: {},
+    label: {
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 600,
+        letterSpacing: '1px',
+        '&$focused': {
+            color: '#f95959'
+        },
     },
     validateField: {
         borderRadius: '12px',
         width: '80%',
         marginBottom: '1.3rem',
+        '&$focused $notchedOutline': {
+            border: '2px solid #f95959'
+        },
+        "&:hover:not($disabled):not($focused):not($error) $notchedOutline": {
+            border: '1px solid #f95959'
+        }
     },
     passwordInfo: {
         fontFamily: 'Montserrat',
