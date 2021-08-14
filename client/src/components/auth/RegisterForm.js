@@ -90,7 +90,9 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                 label="Email"
                 autoComplete="off"
                 InputProps={{
-                    className: classes.inputField,
+                    classes: {
+                        root: classes.inputField,
+                    },
                     style: {marginBottom: validEmail || validEmail === null ? '1.3rem' : '0'}
                 }}
                 size="small"
@@ -116,7 +118,9 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                 label="Username"
                 autoComplete="off"
                 InputProps={{
-                    className: classes.inputField
+                    classes: {
+                        root: classes.inputField,
+                    },
                 }}
                 size="small"
                 required
@@ -166,7 +170,9 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                             </Tooltip>
                         </InputAdornment>
                     ),
-                    className: classes.validateField,
+                    classes: {
+                        root: classes.validateField,
+                    },
                     style: {marginBottom: validPassword || validPassword === null ? '1.3rem' : '0'}
                 }}
                 FormHelperTextProps={{
@@ -205,7 +211,9 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                             </IconButton>
                         </InputAdornment>
                     ),
-                    className: classes.inputField,
+                    classes: {
+                        root: classes.inputField,
+                    },
                     style: {marginBottom: passwordMatch || passwordMatch === null ? '1.3rem' : '0'}
                 }}
                 FormHelperTextProps={{
@@ -226,7 +234,9 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                     label="Month"
                     variant="outlined"
                     InputProps={{
-                        className: classes.selectField
+                        classes: {
+                            root: classes.selectField,
+                        },
                     }}
                     size="small"
                     style={{width: '30%'}}
@@ -245,7 +255,9 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                     variant="outlined"
                     label="Day" 
                     InputProps={{
-                        className: classes.selectField
+                        classes: {
+                            root: classes.selectField,
+                        },
                     }}
                     style={{width: '30%'}}
                     size="small"
@@ -262,7 +274,9 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                     variant="outlined"
                     label="Year"
                     InputProps={{
-                        className: classes.selectField
+                        classes: {
+                            root: classes.selectField,
+                        },
                     }}
                     style={{width: '30%'}}
                     size="small"
