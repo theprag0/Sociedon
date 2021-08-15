@@ -33,17 +33,26 @@ function Logout(props) {
         setUserData({});
         setToken(null);
         if(socket !== null) socket.disconnect(true);
-        props.history.push('/');
+        props.history.push({
+            pathname: '/',
+            state: {message: 'Logged you out 👍', type: 'success'}
+        });
     }
 
     return (
-        <Button 
-            className={classes.btn} 
-            onClick={handleLogout}
-            endIcon={<ExitToAppIcon fontSize="small"/>}
-        > 
-            Logout
-        </Button>
+        <>
+            {
+                props.currPage === 'home'
+                ? <button onClick={handleLogout} className="logout-btn">Logout</button>
+                : <Button 
+                    className={classes.btn} 
+                    onClick={handleLogout}
+                    endIcon={<ExitToAppIcon fontSize="small"/>}
+                > 
+                    Logout
+                </Button>
+            }
+        </>
     )
 }
 
