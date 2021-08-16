@@ -4,12 +4,12 @@ import { AuthenticationContext } from '../../contexts/auth.context';
 import Logout from '../auth/Logout';
 import '../../styles/Home.css';
 
-function HomeNavbar(props) {
+function HomeNavbar({navState, scrollToView}) {
     const {isAuthenticated, userData} = useContext(AuthenticationContext);
 
     return(
-        <nav className="home-nav">
-            <div className="nav-logo">Sociedon</div>
+        <nav className={`home-nav ${navState}`}>
+            <div className="nav-logo" title="landing" onClick={scrollToView}>Sociedon</div>
             <div className="nav-links">
                 {(isAuthenticated && userData) ? (
                     <>

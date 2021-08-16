@@ -40,7 +40,7 @@ module.exports.sendOtpVerification = async (userEmail, otp) => {
     const response = await transporter.sendMail({
         from: 'sociedon@gmail.com',
         to: userEmail,
-        subject: `${otp} is your Sociedon sign-up passcode`,
+        subject: `Your Sociedon sign-up passcode is ${otp}`,
         html: `
             <h1 
             style="
@@ -68,33 +68,6 @@ module.exports.sendOtpVerification = async (userEmail, otp) => {
             <p style="font-family: Roboto; color: #6F6F6F;">Thank You,</p>
             <p style="font-family: cursive; letter-spacing: 1px; color: #6F6F6F;">Sociedon.</p>
         `,
-        text: `
-            <h1 
-            style="
-                font-family: cursive; 
-                font-size: 20px;
-                padding: 8px;
-                border-radius: 15px;
-                background-color: #4849a1;
-                color: #fff;
-                width: 80%;
-                text-align: center;
-                letter-spacing: 1px;
-            ">
-                Sociedon
-            </h1>
-            <p style="font-family: Roboto; color: #6F6F6F; font-size: 16px;">Hi There,</p>
-            <p style="font-family: Roboto; color: #6F6F6F; font-size: 16px;">Your one-time sign up passcode is:</p>
-            <h2 style="font-family: Roboto; font-size: 20px">${otp}</h2>
-            <em>
-                <p style="font-family: Roboto; color: #6F6F6F; font-size: 15px; letter-spacing: 1px;">
-                    If you did not initiate the sign-up, please contact <strong>Sociedon Admin</strong> or report the issue to
-                    <strong><a>sociedon@gmail.com</a></strong>
-                </p>
-            </em>
-            <p style="font-family: Roboto; color: #6F6F6F;">Thank You,</p>
-            <p style="font-family: cursive; letter-spacing: 1px; color: #6F6F6F;">Sociedon.</p>
-        `
     });
     if(response) {
         return response;

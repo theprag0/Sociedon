@@ -54,7 +54,7 @@ export const withSnackbar = WrappedComponent => {
                             <i className={type.iconClass} style={{color: type.color, marginRight: '1rem'}}></i>
                             : null
                         }
-                        <p style={{color: '#000', marginRight: '0.5rem'}}>{message}</p>
+                        <p style={{color: '#000', marginRight: '0.5rem', paddingBottom: 0}}>{message}</p>
                         {(type && type.emoji) ? type.emoji : null}
                     </span>
                 }

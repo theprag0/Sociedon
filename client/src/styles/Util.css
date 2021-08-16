@@ -64,3 +64,18 @@
 		background-position: 0% 50%;
 	}
 }
+
+/* Loader Component */
+.loader {
+	height: 200px;
+	width: 400px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -100px;
+	margin-left: -200px;
+}
+.loader p {
+	font-family: 'Sigmar One', cursive;
+	font-size: 1.5rem;
+}

@@ -45,13 +45,15 @@ function SearchList({userSearchData, type, snackbarShowMessage}) {
                     className="user-avatar"
                     style={{width: '2.5rem', height: '2.5rem', paddingTop: '5px'}}
                 />
-                : <Image 
-                    cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
-                    publicId={userSearchData.avatar && userSearchData.avatar.avatarId}
-                    className="user-avatar"
-                    style={{width: '2.5rem', height: '2.5rem', paddingTop: '5px'}}
-                    alt="user avatar"
-                />
+                : userSearchData.avatar && userSearchData.avatar.avatarType === 'customAvatar'
+                    ?   <Image 
+                        cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
+                        publicId={userSearchData.avatar && userSearchData.avatar.avatarId}
+                        className="user-avatar"
+                        style={{width: '2.5rem', height: '2.5rem', paddingTop: '5px'}}
+                        alt="user avatar"
+                    />
+                    : ''
             }
             <p style={{paddingBottom: 0}}>
                 {(type === 'friends' ? userSearchData.username : userSearchData.name) || userSearchData.msg}

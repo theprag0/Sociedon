@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { SocketContext } from '../../contexts/socket.context';
 import { MessengerContext } from '../../contexts/messenger.context';
@@ -7,11 +7,13 @@ import MessengerHome from './MessengerHome';
 import Chatbox from './Chatbox';
 import Infobar from './infobar/Infobar';
 import Notifications from './Notifications';
+import GlobalNotification from '../utility/GlobalNotification';
 import { withSnackbar } from '../utility/SnackbarHOC';
 
 function Messenger({history, match, snackbarShowMessage}) {
     const {socket, setSocket} = useContext(SocketContext);
     const {setFriends, currentBody, setChatboxUser, chatboxUser, setConversations} = useContext(MessengerContext);
+    const [showGlobalNotif, setShowGlobalNotif] = useState(true);
 
     // Replace redirect history
     useEffect(() => {
@@ -100,6 +102,26 @@ function Messenger({history, match, snackbarShowMessage}) {
         }
     }, [socket, match.params.id]);
 
+    // Show GlobalNotification
+    useEffect(() => {
+        const globalNotifMetaData = JSON.parse(window.localStorage.getItem('global-notif'));
+    
+        if(!globalNotifMetaData) {
+            setShowGlobalNotif(true);
+            window.localStorage.setItem('global-notif', JSON.stringify({notifId: 'v1', notifSeen: false}));
+        } else if(globalNotifMetaData && globalNotifMetaData.notifSeen) {
+            setShowGlobalNotif(false);
+        }
+    }, []);
+    const handleGlobalNotif = e => {
+        if(e.currentTarget.title === 'info-icon') {
+            setShowGlobalNotif(true);
+        } else {
+            setShowGlobalNotif(false);
+            window.localStorage.setItem('global-notif', JSON.stringify({notifId: 'v1', notifSeen: true}));
+        }
+    }
+
     // Set messenger body based on state
     let messengerBody;
     if(currentBody === 'home') {
@@ -118,6 +140,14 @@ function Messenger({history, match, snackbarShowMessage}) {
 
     return (
         <section className="Messenger">
+            {
+                showGlobalNotif
+                ? <GlobalNotification 
+                    showGlobalNotif={showGlobalNotif}
+                    handleGlobalNotif={handleGlobalNotif}
+                />
+                : null
+            }
             <Sidebar userId={match.params.id}/>
             <div className="Messenger-body">
                 {messengerBody}
@@ -128,6 +158,7 @@ function Messenger({history, match, snackbarShowMessage}) {
                 </div>
                 <Infobar 
                     userId={match.params.id}
+                    handleGlobalNotif={handleGlobalNotif}
                 />
             </div>
         </section>

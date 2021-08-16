@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import isDate from 'validator/lib/isDate';
 import isStrongPassword from 'validator/lib/isStrongPassword';
 import isEmail from 'validator/lib/isEmail';
@@ -47,9 +48,11 @@ function Register(props) {
 
     // Form and validate dob string
     let dob = useRef(null);
-    let [validDate, setValidDate] = useState(null);
+    const [validDate, setValidDate] = useState(null);
+    const [eligibleUser, setEligibleUser] = useState('');
     useEffect(() => {
         dob.current = `${year}-${month}-${day}`;
+        const age = moment().diff(dob.current, 'years');
         if((year && day && month) !== '') {
             let dateValidator = isDate(dob.current);
             if(dateValidator) {
@@ -57,6 +60,9 @@ function Register(props) {
             } else {
                 setValidDate(false);
             }
+
+            if(age < 12) setEligibleUser(false);
+            else setEligibleUser(true);
         }
     }, [year, day, month]);
 
@@ -68,7 +74,7 @@ function Register(props) {
             emailCheckTimeout = setTimeout(() => {
                 let emailValidator = isEmail(email);
                 setValidEmail(emailValidator);
-            }, 600);
+            }, 700);
         } else {
             setValidEmail(null)
         }
@@ -83,7 +89,7 @@ function Register(props) {
             checkTimeout = setTimeout(() => {
                 let passwordValidator = isStrongPassword(password);
                 setValidPassword(passwordValidator);
-            }, 600);
+            }, 700);
         } else {
             setValidPassword(null);
         }
@@ -98,7 +104,7 @@ function Register(props) {
             passwordTimeout = setTimeout(() => {
                 if(password === confirmPassword) setPasswordMatch(true);
                 else setPasswordMatch(false);
-            }, 600);
+            }, 700);
         } else setPasswordMatch(null);
         return () => clearTimeout(passwordTimeout);
     }, [confirmPassword, password]);
@@ -227,6 +233,13 @@ function Register(props) {
                                     setDay,
                                     setMonth,
                                     setYear,
+                                    resetEmail,
+                                    resetUsername,
+                                    resetPassword,
+                                    resetConfirmPassword,
+                                    resetDay,
+                                    resetMonth,
+                                    resetYear,
                                     handleStep
                                 }}
                                 stateData={{
@@ -240,7 +253,8 @@ function Register(props) {
                                     validEmail,
                                     validPassword,
                                     passwordMatch,
-                                    validDate
+                                    validDate,
+                                    eligibleUser
                                 }}
                                 snackbarShowMessage={props.snackbarShowMessage}
                             />
@@ -283,6 +297,7 @@ function Register(props) {
                             && validPassword
                             && passwordMatch
                             && emailVerified
+                            && eligibleUser
                             ? false : true
                         }
                     >

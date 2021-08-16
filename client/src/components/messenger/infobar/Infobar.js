@@ -6,7 +6,7 @@ import HomeInfobar from './HomeInfobar';
 import '../../../styles/Infobar.css';
 import ChatboxInfobar from './ChatboxInfobar';
 
-function Infobar({userId}) {
+function Infobar({userId, handleGlobalNotif}) {
     const {userData} = useContext(AuthenticationContext);
     const {socket} = useContext(SocketContext);
     const {friends, setFriends, currentBody} = useContext(MessengerContext);
@@ -31,6 +31,7 @@ function Infobar({userId}) {
                 userData={userData}
                 userId={userId}
                 friends={friends}
+                handleGlobalNotif={handleGlobalNotif}
             />
         );
     } else if(currentBody === 'chatbox') {

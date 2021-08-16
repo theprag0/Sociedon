@@ -85,7 +85,8 @@ function SidebarPanel(props) {
 
     return (
         <div className="SidebarPanel">
-            <div className="Sociedon-Logo"></div>
+            <div className="Sociedon-Logo">
+            </div>
             <div className="filler"></div>
             <div className="arena-icons">
                 <HomeOutlinedIcon 

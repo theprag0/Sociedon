@@ -5,7 +5,7 @@ import FriendsListItem from '../sidebar/FriendsListItem';
 import { getAvatar } from '../../../helpers/getAvatar';
 import friendsIllustration from '../../../assets/svg/friends-illus.svg';
 
-function HomeInfobar({userData, userId, friends}) {
+function HomeInfobar({userData, userId, friends, handleGlobalNotif}) {
     return (
         <>
             {
@@ -52,6 +52,7 @@ function HomeInfobar({userData, userId, friends}) {
                         </div>
                     )
                 }
+                <i class="fas fa-info-circle info-btn" title="info-icon" onClick={handleGlobalNotif}></i>
             </div>
         </>
     )
