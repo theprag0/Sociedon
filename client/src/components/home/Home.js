@@ -17,7 +17,7 @@ import callsIllus from '../../assets/images/home-calls-illus.jpg';
 function Home({history, snackbarShowMessage}) {
     const {isAuthenticated, userData} = useContext(AuthenticationContext);
     const [modalOpen, setModalOpen] = useState(false);
-    const [navScrolled, setNavScrolled] = useState(false);
+    const [navState, setNavState] = useState("initial");
     
     useEffect(() => {
         if(history.location.state && history.location.state.type === 'privateRoute') {
@@ -33,19 +33,24 @@ function Home({history, snackbarShowMessage}) {
     useEffect(() => AOS.init(), []);
 
     // Change nav color on scroll
-    let scrollListener = useRef(null);
     useEffect(() => {
-        scrollListener.current = document.addEventListener('scroll', e => {
-            let scrolled = document.scrollingElement.scrollTop;
-            if(scrolled >= 120 && !navScrolled) {
-                setNavScrolled(true);
-            } else if(navScrolled) {
-                setNavScrolled(false);
-            }
-        });
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+    const handleScroll = e => {
+        if(window.scrollY > 100) setNavState("scrolled");
+        else setNavState('initial');
+    }
 
-        return () => document.removeEventListener('scroll', scrollListener);
-    }, [navScrolled]);
+    const landingRef = useRef(null);
+    const featuresRef = useRef(null);
+    const scrollToView = e => {
+        if(e.currentTarget.title === 'landing') {
+            landingRef.current.scrollIntoView({behavior: 'smooth'});
+        } else if(e.currentTarget.title === 'features') {
+            featuresRef.current.scrollIntoView({behavior: 'smooth'});
+        }
+    }
 
     const handleModalClose = () => {
         setModalOpen(false);
@@ -53,8 +58,8 @@ function Home({history, snackbarShowMessage}) {
 
     return(
         <div className="Home">
-            <HomeNavbar navScrolled={navScrolled}/>
-            <section className="home-landing" id="home-landing">
+            <HomeNavbar navState={navState} scrollToView={scrollToView}/>
+            <section className="home-landing" id="home-landing" ref={landingRef}>
                 <div className="gradient-overlay"></div>
                 <div className="landing-desc">
                     <h1>Be Awesome!</h1>
@@ -66,18 +71,18 @@ function Home({history, snackbarShowMessage}) {
                 <div className="landing-links">
                     {
                         isAuthenticated && userData
-                        ? <Link exact to={`/messenger/${userData.userId}`}>Start Chatting</Link>
-                        : <Link exact to="/register">Get Started</Link>
+                        ? <Link to={`/messenger/${userData.userId}`}>Start Chatting</Link>
+                        : <Link to="/register">Get Started</Link>
                     }
-                    <button>Learn More</button>
+                    <button onClick={scrollToView} title="features">Learn More</button>
                 </div>
                 <div className="arrow-down">
-                    <a href="#features">
+                    <button title="features" onClick={scrollToView}>
                         <i className="fas fa-chevron-down fa-2x"></i>
-                    </a>
+                    </button>
                 </div>
             </section>
-            <section className="features" id="features">
+            <section className="features" id="features" ref={featuresRef}>
                 <div className="direct-messages">
                     <img src={dmIllus} alt="direct messages"/>
                     <Card 
@@ -159,37 +164,46 @@ function Home({history, snackbarShowMessage}) {
                     </div>
                     <div className="quick-links">
                         <p>Quick Links:</p>
-                        <a href="#home-landing">Home</a>
+                        <button title="landing" onClick={scrollToView}>Home</button>
                         {
                             isAuthenticated && userData
                             ? (
                                 <>
-                                    <Link exact to={`/messenger/${userData.userId}`}>Open Sociedon</Link>
-                                    <Link exact to="/logout">Logout</Link>
+                                    <Link to={`/messenger/${userData.userId}`}>Open Sociedon</Link>
+                                    <Link to="/logout">Logout</Link>
                                 </>
                             )
                             : (
                                 <>
-                                    <Link exact to="/register">Sign Up</Link>
-                                    <Link exact to="/login">Login</Link>
+                                    <Link to="/register">Sign Up</Link>
+                                    <Link to="/login">Login</Link>
                                 </>
                             )
                         }
                     </div>
                     <div className="dev-info">
                         <h1>Contact the <br/> developer:</h1>
-                        <a href="mailto: praghadieshnikhil234@gmail.com" target="_blank">Email Me!</a>
+                        <a href="mailto: praghadieshnikhil234@gmail.com" target="_blank" rel="noreferrer">Email Me!</a>
+                        <div>
+                            <a href="https://www.buymeacoffee.com/theprag" target="_blank" className="bmc-btn">
+                                <img 
+                                    src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+                                    alt="Buy Me A Coffee" 
+                                    style={{height: '60px !important', width: '217px !important', borderRadius: '14px'}} 
+                                />
+                            </a>
+                        </div>
                         <div className="social-media">
-                            <a href="https://github.com/theprag0/Sociedon" target="_blank" className="github-icon">
+                            <a href="https://github.com/theprag0/Sociedon" target="_blank" className="github-icon" rel="noreferrer">
                                 <i className="fab fa-github"></i>
                             </a>
-                            <a href="https://www.linkedin.com/in/praghadiesh-saravanan-45b876198/" target="_blank" className="linkedin-icon">
+                            <a href="https://www.linkedin.com/in/praghadiesh-saravanan-45b876198/" target="_blank" className="linkedin-icon" rel="noreferrer">
                                 <i className="fab fa-linkedin"></i>
                             </a>
-                            <a href="https://www.facebook.com/praghadiesh.nikil/" target="_blank" className="facebook-icon">
+                            <a href="https://www.facebook.com/praghadiesh.nikil/" target="_blank" className="facebook-icon" rel="noreferrer">
                                 <i className="fab fa-facebook"></i>
                             </a>
-                            <a href="https://www.facebook.com/praghadiesh.nikil/" target="_blank" className="instagram-icon">
+                            <a href="https://www.facebook.com/praghadiesh.nikil/" target="_blank" className="instagram-icon" rel="noreferrer">
                                 <i className="fab fa-instagram"></i>
                             </a>
                         </div>
@@ -203,8 +217,8 @@ function Home({history, snackbarShowMessage}) {
                     </p>
                     {
                         isAuthenticated && userData
-                        ? <Link exact to={`/messenger/${userData.userId}`}>Open Sociedon</Link>
-                        : <Link exact to="/register">Get Started</Link>
+                        ? <Link to={`/messenger/${userData.userId}`}>Open Sociedon</Link>
+                        : <Link to="/register">Get Started</Link>
                     }
                 </div>
             </footer>
