@@ -2,6 +2,20 @@ html {
 	scroll-behavior: smooth;
 }
 
+body::-webkit-scrollbar {
+	width: 7px;
+}
+body::-webkit-scrollbar-track {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+body::-webkit-scrollbar-thumb {
+	background-color: rgba(7, 54, 87, 0.9);
+	border-radius: 14px;
+}
+body::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(7, 54, 87, 1);
+}
+
 /* Home Navbar */
 .home-nav {
 	position: fixed;

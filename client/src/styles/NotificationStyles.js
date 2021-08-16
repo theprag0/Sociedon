@@ -51,10 +51,14 @@ const useStyles = makeStyles((theme) => ({
         '& i': {
             margin: '0 5px',
             borderRadius: '50%',
-            cursor: 'pointer'
+            cursor: 'pointer',
         },
         '&:hover': {
             backgroundColor: '#fff'
+        },
+        "& p": {
+            fontFamily: "'Nunito', sans-serif",
+            fontWeight: 600
         }
     },
     accept: {
@@ -68,7 +72,13 @@ const useStyles = makeStyles((theme) => ({
         padding: '5px',
         paddingRight: '8px',
         paddingLeft: '8px'
-    }
+    },
+    userAvatar: {
+        height: '2.5rem',
+        width: '2.5rem',
+        borderRadius: '50%',
+        marginRight: '10px'
+    },
 }));  
 
 export default useStyles;

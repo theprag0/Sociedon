@@ -153,14 +153,14 @@ const returnRouter = io => {
     router.get('/retrieve/:type/:userId', auth, async (req, res) => {
         try{
             if(req.params.type === 'friendRequests') {
-                const pendingRequests = await User.findById({_id: req.params.userId}, {friendRequests: 1}).populate('friendRequests.from', 'username');
+                const pendingRequests = await User.findById({_id: req.params.userId}, {friendRequests: 1}).populate('friendRequests.from', 'username avatar');
             
                 if(pendingRequests.length === 0 || !pendingRequests) {
                     return res.json({msg: 'No Pending Requests!'});
                 }
         
                 const filterRequests = pendingRequests.friendRequests.map(p => (
-                    {fromId: p.from._id, fromUsername: p.from.username, status: p.status}
+                    {fromId: p.from._id, fromUsername: p.from.username, avatar: p.from.avatar, status: p.status}
                 ));
                 return res.json({requests: filterRequests});
             } else if(req.params.type === 'conversations') {

@@ -270,3 +270,15 @@
 .upcoming-feature p:last-child {
 	padding: 10px;
 }
+
+/* Utility */
+.info-btn {
+	position: absolute;
+	top: 0;
+	right: 0;
+	color: #ccc;
+	font-size: 1rem;
+	margin: 1rem;
+	margin-top: 1.5rem;
+	cursor: pointer;
+}

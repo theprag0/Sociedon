@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
 
         // Check for existing user
         const existingUser = await User.findOne({email});
-        if(existingUser) return res.status(400).json({msg: 'User already exists, use a different email.'});
+        if(existingUser) return res.status(400).json({msg: 'User already exists, try using a different email.'});
 
         // Generate date string
         const dobIso = new Date(`${dob}T00:00:00Z`);
@@ -82,12 +82,16 @@ router.post('/register/verify', async (req, res) => {
     try{
         if(req.body.type === 'generateOtp') {
             const {email} = req.body;
+
+            // Check if user already has an account
+            const existingUser = await User.findOne({email});
+            if(existingUser) return res.status(500).json({msg: 'User already exists, try using a different email'});
+
             const otp = customAlphabet('0123456789', 6);
             
             // Check if user already has an OTP allocated
             const foundOtp = await OTP.findOne({recipientEmail: email});
             if(foundOtp && foundOtp.generatedOtpNum < 3) {
-                console.log('generate again')
                 const updateOtp = await OTP.findOneAndUpdate({recipientEmail: email}, {
                     $set: {
                         generatedOtp: otp(), 
@@ -137,7 +141,6 @@ router.post('/register/verify', async (req, res) => {
             }
 
             // save otp 
-            console.log('first time')
             const newOtpDoc = new OTP({recipientEmail: email, generatedOtp: otp()});
             const saveOtp = await newOtpDoc.save();
             if(saveOtp) {
@@ -158,7 +161,7 @@ router.post('/register/verify', async (req, res) => {
             const currDate = moment(Date.now());
             const otpCreatedAt = moment(foundOtp.createdAt);
             const duration = moment.duration(currDate.diff(otpCreatedAt)).asMinutes();
-
+        
             if(foundOtp.generatedOtp === otp && foundOtp.incorrectAttempts < 3 && Math.round(duration) < 11) {
                 const deleteOtpDoc = await OTP.findOneAndDelete({recipientEmail: email});
                 if(deleteOtpDoc) return res.json({status: 'success', msg: 'OTP verified 👍'});

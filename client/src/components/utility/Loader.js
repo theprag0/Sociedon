@@ -1,9 +1,13 @@
 import React from 'react';
 import loader from '../../assets/svg/pac-load.svg';
+import '../../styles/Util.css';
 
 function Loader() {
     return (
-        <img src={loader} alt="loading animation"/>
+        <section className="loader">
+            <img src={loader} alt="loading animation"/>
+            <p>Loading Sociedon...</p>
+        </section>
     );
 }
 

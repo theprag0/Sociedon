@@ -18,7 +18,7 @@ function Sidebar({userId}) {
     const [searchQuery, setSearchQuery, resetSearchQuery] = useInputState('', false);
     const [searchResult, setSearchResult] = useState([]);
     const [searchBarIsOpen, setSearchBarIsOpen] = useState(false);
-    console.log(userData);
+    
     // Load user's conversations/direct messages
     useEffect(() => {
         const config = {
@@ -76,7 +76,6 @@ function Sidebar({userId}) {
             const searchResults = conversations.filter(c => (
                 c.username.toUpperCase().search(searchQuery.toUpperCase()) !== -1
             ));
-            console.log(searchResults);
             setSearchResult(searchResults);
         }
     }, [searchQuery]);

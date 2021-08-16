@@ -24,6 +24,13 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
         setDay,
         setMonth,
         setYear,
+        resetEmail,
+        resetUsername,
+        resetPassword,
+        resetConfirmPassword,
+        resetDay,
+        resetMonth,
+        resetYear,
         handleStep
     } = stateFunctions;
     const {
@@ -37,7 +44,8 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
         validEmail,
         validPassword,
         passwordMatch,
-        validDate
+        validDate,
+        eligibleUser
     } = stateData;
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -74,7 +82,18 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                 handleStep();
                 setSubmittingForm(false);
                 snackbarShowMessage(res.data.msg, 'success');
-            }).catch(err => console.log(err));
+            }).catch(err => {
+                setSubmittingForm(false);
+                snackbarShowMessage(err.response.data.msg, 'error');
+                resetEmail()
+                resetUsername()
+                resetPassword()
+                resetConfirmPassword()
+                resetDay()
+                resetMonth()
+                resetYear()
+                console.log(err)
+            });
     }
 
     return (
@@ -290,6 +309,7 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
             </Grid>
             <p style={{color: '#f44336', fontSize: '0.75rem', padding: 0, paddingLeft: '1rem'}}>
                 {(!validDate && validDate !== null) ? 'Choose a valid date' : ''}
+                {(!eligibleUser && eligibleUser !== '') ? "Sorry, looks like you're not eligible for a Sociedon account": ''}
             </p>
             <button 
                 type="button" 
@@ -300,6 +320,7 @@ function RegisterForm({stateFunctions, stateData, snackbarShowMessage}) {
                     && validEmail
                     && validPassword
                     && passwordMatch
+                    && eligibleUser
                     ? false 
                     : true
                 }
