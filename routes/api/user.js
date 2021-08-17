@@ -160,7 +160,7 @@ router.post('/register/verify', async (req, res) => {
             const foundOtp = await OTP.findOne({recipientEmail: email});
             const currDate = moment(Date.now());
             const otpCreatedAt = moment(foundOtp.createdAt);
-            const duration = moment.duration(currDate.diff(otpCreatedAt)).asMinutes();
+            let duration = moment.duration(currDate.diff(otpCreatedAt)).asMinutes();
         
             if(foundOtp.generatedOtp === otp && foundOtp.incorrectAttempts < 3 && Math.round(duration) < 11) {
                 const deleteOtpDoc = await OTP.findOneAndDelete({recipientEmail: email});

@@ -15,6 +15,16 @@ const socketMain = require('./sockets/socketMain');
 let app = express();
 app.use(express.json({limit: '50mb'}));
 app.use(helmet());
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        "default-src": ["'self'"],
+        "connect-src": ["'self'", "'unsafe-inline'"],
+        "img-src": ["'self'", "data:"],
+        "style-src-elem": ["'self'", "data:"],
+        "script-src": ["'unsafe-inline'", "'self'"],
+        "object-src": ["'none'"],
+    }
+}));
 app.use(hpp());
 
 // Mongo Connection
