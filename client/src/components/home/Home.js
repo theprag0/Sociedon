@@ -13,6 +13,7 @@ import dmIllus from '../../assets/images/dm-section.webp';
 import arenaIllus from '../../assets/images/arena-bg.png';
 import fileSharingIllus from '../../assets/images/home-file-sharing-illus.jpg';
 import callsIllus from '../../assets/images/home-calls-illus.jpg';
+import bmcBtn from '../../assets/images/yellow-button.png';
 
 function Home({history, snackbarShowMessage}) {
     const {isAuthenticated, userData} = useContext(AuthenticationContext);
@@ -187,7 +188,7 @@ function Home({history, snackbarShowMessage}) {
                         <div>
                             <a href="https://www.buymeacoffee.com/theprag" target="_blank" className="bmc-btn">
                                 <img 
-                                    src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+                                    src={bmcBtn}
                                     alt="Buy Me A Coffee" 
                                     style={{height: '60px !important', width: '217px !important', borderRadius: '14px'}} 
                                 />
