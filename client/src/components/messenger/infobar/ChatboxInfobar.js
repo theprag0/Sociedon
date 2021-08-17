@@ -13,7 +13,7 @@ function ChatboxInfobar({userData}) {
     const {chatboxUser} = useContext(MessengerContext);
     const [tooltipIsOpen, setTooltipIsOpen] = useState({btn1: false, btn2: false});
     const tooltipClasses = useTooltipStyles();
-    console.log(chatboxUser)
+    
     const handleTooltipClose = () => {
         setTooltipIsOpen({btn1: false, btn2: false});
     };
