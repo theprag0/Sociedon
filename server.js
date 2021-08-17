@@ -27,17 +27,6 @@ mongoose.connect(process.env.DB_URL, {
 .then(() => console.log('Connected to dB!'))
 .catch(e => console.log(e));
 
-// Don't expose our internal server to the outside world.
-// Serve static assets if in production
-if(process.env.NODE_ENV === 'production') {
-    // Set static folder
-    app.use(express.static(path.join(__dirname, 'client', 'build')));
-
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-    });
-}
-
 const server = app.listen(port, process.env.IP, () => {
     console.log(`Listening in port ${port}...`)
 });
@@ -59,6 +48,17 @@ const userRoutes = require('./routes/api/user'),
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/messenger', messengerRoutes);
+
+// Don't expose our internal server to the outside world.
+// Serve static assets if in production
+if(process.env.NODE_ENV === 'production') {
+    // Set static folder
+    app.use(express.static('client/build'));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+}
 
 io.on('connection', async (socket) => {
     const userId = socket.handshake.query.userId;
