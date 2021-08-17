@@ -41,7 +41,7 @@ const server = app.listen(port, process.env.IP, () => {
 // Socket init
 const io = socketio(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "https://sociedon.herokuapp.com/",
         methods: ["GET", "POST"],
         allowedHeaders: ["my-custom-header"],
         credentials: true
