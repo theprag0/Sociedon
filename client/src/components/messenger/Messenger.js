@@ -28,7 +28,7 @@ function Messenger({history, match, snackbarShowMessage}) {
     // Socket connection
     useEffect(() => {
         // Socket connections
-        setSocket(io(`http://localhost:8080?userId=${match.params.id}`));
+        setSocket(io(`https://sociedon.herokuapp.com/?userId=${match.params.id}`));
     }, [match.params.id]);
 
     const chatboxUserId = useRef(null);
