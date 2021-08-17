@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express'),
     mongoose = require('mongoose'),
     socketio = require('socket.io'),
-    session = require('cookie-session'),
     helmet = require('helmet'),
     hpp = require('hpp'),
     path = require('path'),
@@ -64,6 +63,15 @@ if (cluster.isMaster) {
     .catch(e => console.log(e));
 
     // Don't expose our internal server to the outside world.
+    // Serve static assets if in production
+    if(process.env.NODE_ENV === 'production') {
+        // Set static folder
+        app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+        app.get('*', (req, res) => {
+            res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+        });
+    }
     const server = app.listen(0, 'localhost');
     // console.log("Worker listening...");    
     const io = socketio(server, {
@@ -153,15 +161,5 @@ if (cluster.isMaster) {
 
         connection.resume();
     });
-
-    // Serve static assets if in production
-    if(process.env.NODE_ENV === 'production') {
-        // Set static folder
-        app.use(express.static(path.join(__dirname, 'client', 'build')));
-
-        app.get('*', (req, res) => {
-            res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-        });
-    }
 }
 
