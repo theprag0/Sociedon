@@ -27,6 +27,14 @@ mongoose.connect(process.env.DB_URL, {
 .then(() => console.log('Connected to dB!'))
 .catch(e => console.log(e));
 
+// Use API routes
+const userRoutes = require('./routes/api/user'),
+    authRoutes = require('./routes/api/auth'),
+    messengerRoutes = require('./routes/api/messenger')(io);
+app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/messenger', messengerRoutes);
+
 // Don't expose our internal server to the outside world.
 // Serve static assets if in production
 if(process.env.NODE_ENV === 'production') {
@@ -107,13 +115,3 @@ io.on('connection', async (socket) => {
         socket.disconnect(true);
     });
 });
-
-// Use API routes
-const userRoutes = require('./routes/api/user'),
-    authRoutes = require('./routes/api/auth'),
-    messengerRoutes = require('./routes/api/messenger')(io);
-app.use('/api/user', userRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/messenger', messengerRoutes);
-
-
