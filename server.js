@@ -5,7 +5,7 @@ const express = require('express'),
     session = require('cookie-session'),
     helmet = require('helmet'),
     hpp = require('hpp'),
-    // csurf = require('csurf'),
+    path = require('path'),
     net = require('net'),
     cluster = require('cluster');
 
@@ -62,16 +62,6 @@ if (cluster.isMaster) {
     })
     .then(() => console.log('Connected to dB!'))
     .catch(e => console.log(e));
-
-    // Cookie Configs
-    // app.use(
-    //     session({
-    //         name: 'session',
-    //         secret: process.env.SESSION_SECRET,
-    //         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    //     })
-    // );
-    // app.use(csurf());
 
     // Don't expose our internal server to the outside world.
     const server = app.listen(0, 'localhost');
@@ -163,27 +153,15 @@ if (cluster.isMaster) {
 
         connection.resume();
     });
-}
 
-function addClientToMap(userName, socketId, onlineUsersMap){
-    if (!onlineUsersMap.has(userName)) {
-        //when user is joining first time
-        onlineUsersMap.set(userName, new Set([socketId]));
-    } else{
-        //user had already joined from one client and now joining using another
-        //client
-        onlineUsersMap.get(userName).add(socketId);
+    // Serve static assets if in production
+    if(process.env.NODE_ENV === 'production') {
+        // Set static folder
+        app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+        app.get('*', (req, res) => {
+            res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+        });
     }
 }
 
-function removeClientFromMap(userName, socketId, onlineUsersMap){
-    if (onlineUsersMap.has(userName)) {
-        let userSocketIdSet = onlineUsersMap.get(userName);
-        userSocketIdSet.delete(socketId);
-        //if there are no clients for a user, remove that user from online
-        list (map)
-        if (userSocketIdSet.size ==0 ) {
-            onlineUsersMap.delete(userName);
-        }
-    }
-}

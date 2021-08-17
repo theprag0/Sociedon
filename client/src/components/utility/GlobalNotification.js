@@ -166,6 +166,10 @@ function GlobalNotification({handleGlobalNotif, showGlobalNotif}) {
                             Create or join arenas and find people just like you, explore new stuff and stay connected.
                         </li>
                         <li>
+                            <strong>People Near You:</strong>
+                            Find people in your area with a simple and interactive UI
+                        </li>
+                        <li>
                             <strong>GIF Support.</strong>
                         </li>
                     </ul>
