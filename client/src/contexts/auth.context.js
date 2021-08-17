@@ -21,8 +21,10 @@ export function AuthenticationProvider(props) {
         setUserLoading(true);
         axios.get('/api/auth/user', config)
             .then(res => {
-                setIsAuthenticated(true);
-                setUserLoading(false);
+                if(res.data && res.data.email) {
+                    setIsAuthenticated(true);
+                    setUserLoading(false);
+                }
                 setStatus(res.status);
                 setUserData(res.data)
             })
