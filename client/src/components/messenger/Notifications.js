@@ -65,8 +65,8 @@ function Notifications({userId, snackbarShowMessage}) {
     //Listen for new friend request
     useEffect(() => {
         if(socket !== null) {
-            socket.on('newFriendRequest', ({fromId, fromUsername}) => {
-                setFriendRequests(friendRequests => [...friendRequests, {fromId, fromUsername}]);
+            socket.on('newFriendRequest', ({fromId, fromUsername, avatar}) => {
+                setFriendRequests(friendRequests => [...friendRequests, {fromId, fromUsername, avatar}]);
             });
         }
     }, [socket]);

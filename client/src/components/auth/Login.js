@@ -55,6 +55,7 @@ function Login(props) {
             })
             .catch(err => {
                 console.log(err)
+                props.snackbarShowMessage(err.response.data.msg, 'error');
                 setIsAuthenticated(false);
                 setUserLoading(true);
                 setStatus(err.response.status);
@@ -62,7 +63,6 @@ function Login(props) {
                 setToken(null);
                 setMsg(err.response.data.msg);
                 setLoading(false);
-                props.snackbarShowMessage(err.response.data.msg, 'error');
             });
 
         resetEmail();

@@ -81,13 +81,14 @@ const returnRouter = io => {
                 });
                 
                 // Check if recipient is online and emit notification
-                const fromUser = await User.findOne({_id: from}, {username: 1});
+                const fromUser = await User.findOne({_id: from}, {username: 1, avatar: 1});
                 if(recipientUser && recipientUser.status === 'online') {
                     recipientUser.socketId.forEach(socket => {
                         io.to(socket).emit('newFriendRequest', {
                             fromUsername: fromUser.username, 
                             fromId: from,
-                            status: newRequest.status
+                            status: newRequest.status,
+                            avatar: fromUser.avatar
                         });
                     })
                 }
