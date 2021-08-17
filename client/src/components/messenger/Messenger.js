@@ -40,7 +40,6 @@ function Messenger({history, match, snackbarShowMessage}) {
     useEffect(() => {
         if(socket !== null) {
             socket.on('connect', () => {
-                console.log(socket.id);
                 socket.on('friendsList', data => setFriends(data.friends));
                 socket.on('newOnlineFriend', data => {
                     setFriends(friends => {
