@@ -42,8 +42,10 @@ router.post('/login', async (req, res) => {
 // @access Private
 router.get('/user', auth, async (req, res) => {
     try{
+        console.log('production testing')
         const foundUser = await User.findById(req.user.id).select('-password');
         if(!foundUser) return res.status(404).json({msg: "Invalid token or user doesn't exist"});
+        console.log(foundUser);
         if(foundUser) return res.json({
             username: foundUser.username,
             email: foundUser.email,
