@@ -79,8 +79,8 @@ function FriendsListItem({userData, selected, userId}) {
                         {
                             userData.lastMessageFromFriend 
                             ? `
-                                ${userData.lastMessageFromFriend.message.slice(0, 20)}
-                                ${userData.lastMessageFromFriend.message.length > 20 ? '...' : ''}
+                                ${userData.lastMessageFromFriend.message.slice(0, 10)}
+                                ${userData.lastMessageFromFriend.message.length > 10 ? '...' : ''}
                             ` 
                             : ''
                         }
