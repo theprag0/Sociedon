@@ -162,20 +162,31 @@ router.post('/register/verify', async (req, res) => {
             const otpCreatedAt = moment(foundOtp.createdAt);
             let duration = moment.duration(currDate.diff(otpCreatedAt)).asMinutes();
         
-            if(foundOtp.generatedOtp === otp && foundOtp.incorrectAttempts < 3 && Math.round(duration) < 11) {
-                const deleteOtpDoc = await OTP.findOneAndDelete({recipientEmail: email});
-                if(deleteOtpDoc) return res.json({status: 'success', msg: 'OTP verified 👍'});
-            } else if(foundOtp.incorrectAttempts >= 3 || Math.round(duration) >= 11) {
-                const updateOtpDoc = await OTP.findOneAndUpdate({recipientEmail: email}, {$set: {
-                    generatedOtp: '',
-                    incorrectAttempts: 0
-                }});
-                if(updateOtpDoc) return res.json({status: 'warning', msg: 'Your OTP has expired, please try again.'});
+            if(foundOtp.generatedOtp === otp) {
+                if(foundOtp.incorrectAttempts < 3 && Math.round(duration) < 11) {
+                    const deleteOtpDoc = await OTP.findOneAndDelete({recipientEmail: email});
+                    if(deleteOtpDoc) return res.json({status: 'success', msg: 'OTP verified 👍'});
+                } else if(foundOtp.incorrectAttempts >= 3 || Math.round(duration) >= 11) {
+                    const updateOtpDoc = await OTP.findOneAndUpdate({recipientEmail: email}, {$set: {
+                        generatedOtp: '',
+                        incorrectAttempts: 0
+                    }});
+                    if(updateOtpDoc) return res.json({status: 'warning', msg: 'Your OTP has expired, please try again.'});
+                }
+            } else {
+                if(foundOtp.incorrectAttempts < 3 && Math.round(duration) < 11) {
+                    await OTP.findOneAndUpdate({recipientEmail: email}, {$set: {
+                        incorrectAttempts: foundOtp.incorrectAttempts + 1
+                    }});
+                    return res.json({status: 'error', msg: 'Incorrect OTP 🙁'});
+                } else if(foundOtp.incorrectAttempts >= 3 || Math.round(duration) >= 11) {
+                    const updateOtpDoc = await OTP.findOneAndUpdate({recipientEmail: email}, {$set: {
+                        generatedOtp: '',
+                        incorrectAttempts: 0
+                    }});
+                    if(updateOtpDoc) return res.json({status: 'warning', msg: 'Your OTP has expired, please try again.'});
+                }
             }
-            await OTP.findOneAndUpdate({recipientEmail: email}, {$set: {
-                incorrectAttempts: foundOtp.incorrectAttempts + 1
-            }});
-            return res.json({status: 'error', msg: 'Incorrect OTP 🙁'});
         }
     } catch(err) {
         console.log(err);
