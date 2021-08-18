@@ -75,7 +75,16 @@ function FriendsListItem({userData, selected, userId}) {
                     </p>
                 </span>
                 <span className="recent-message" style={{display: userData.unreadMessages ? 'flex' : 'none'}}>
-                    <p>{userData.lastMessageFromFriend ? userData.lastMessageFromFriend.message : ''}</p>
+                    <p>
+                        {
+                            userData.lastMessageFromFriend 
+                            ? `
+                                ${userData.lastMessageFromFriend.message.slice(0, 20)}
+                                ${userData.lastMessageFromFriend.message.length > 20 ? '...' : ''}
+                            ` 
+                            : ''
+                        }
+                    </p>
                     <p className={userData.unreadMessages && userData.unreadMessages > 15 ? 'exceeded-unseen' : ''}>
                         {
                             userData.unreadMessages 
