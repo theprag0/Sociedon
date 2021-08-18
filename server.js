@@ -14,14 +14,14 @@ const socketMain = require('./sockets/socketMain');
 
 let app = express();
 app.use(express.json({limit: '50mb'}));
-app.use(helmet());
-app.use(helmet.contentSecurityPolicy({
-    directives: {
-        "default-src": ["'self'"],
-        "connect-src": ["'self'", "'unsafe-inline'"],
-        "img-src": ["'self'", "data:"],
-    }
-}));
+app.use(helmet({contentSecurityPolicy: false}));
+// app.use(helmet.contentSecurityPolicy({
+//     directives: {
+//         "default-src": ["'self'"],
+//         "connect-src": ["'self'", "'unsafe-inline'"],
+//         "img-src": ["'self'", "data:"],
+//     }
+// }));
 app.use(hpp());
 
 // Mongo Connection
@@ -41,7 +41,7 @@ const server = app.listen(port, process.env.IP, () => {
 // Socket init
 const io = socketio(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "*",
         methods: ["GET", "POST"],
         allowedHeaders: ["my-custom-header"],
         credentials: true
